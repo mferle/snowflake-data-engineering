@@ -1,0 +1,43 @@
+Customer,Order date,Delivery date,Baked good type,Quantity
+Coffee Pocket,2023-07-09,2023-07-13,Baguette,5
+Coffee Pocket,2023-07-09,2023-07-13,Bagel,10
+Coffee Pocket,2023-07-09,2023-07-13,English Muffin,12
+Coffee Pocket,2023-07-09,2023-07-13,Croissant,13
+Lily's Coffee,2023-07-09,2023-07-13,Bagel,15
+Lily's Coffee,2023-07-09,2023-07-13,White Loaf,4
+Lily's Coffee,2023-07-09,2023-07-13,Croissant,15
+Crave Coffee,2023-07-09,2023-07-13,Croissant,40
+Best Burgers,2023-07-09,2023-07-13,Hamburger Bun,62
+Page One Fast Food,2023-07-09,2023-07-13,Bagel,16
+Page One Fast Food,2023-07-09,2023-07-13,English Muffin,27
+Page One Fast Food,2023-07-09,2023-07-13,White Loaf,2
+Page One Fast Food,2023-07-09,2023-07-13,Hamburger Bun,49
+Jimmy's Diner,2023-07-09,2023-07-13,Bagel,16
+Jimmy's Diner,2023-07-09,2023-07-13,White Loaf,3
+Jimmy's Diner,2023-07-09,2023-07-13,Whole Wheat Loaf,2
+Jimmy's Diner,2023-07-09,2023-07-13,Hamburger Bun,10
+Metro Fine Foods,2023-07-09,2023-07-13,Baguette,20
+Metro Fine Foods,2023-07-09,2023-07-13,Rye Loaf,4
+Metro Fine Foods,2023-07-09,2023-07-13,White Loaf,20
+Metro Fine Foods,2023-07-09,2023-07-13,Whole Wheat Loaf,19
+Coffee Pocket,2023-07-09,2023-07-14,Baguette,6
+Coffee Pocket,2023-07-09,2023-07-14,Bagel,12
+Coffee Pocket,2023-07-09,2023-07-14,English Muffin,10
+Coffee Pocket,2023-07-09,2023-07-14,Croissant,12
+Lily's Coffee,2023-07-09,2023-07-14,Bagel,10
+Lily's Coffee,2023-07-09,2023-07-14,White Loaf,2
+Lily's Coffee,2023-07-09,2023-07-14,Croissant,16
+Crave Coffee,2023-07-09,2023-07-14,Croissant,32
+Best Burgers,2023-07-09,2023-07-14,Hamburger Bun,40
+Page One Fast Food,2023-07-09,2023-07-14,Bagel,15
+Page One Fast Food,2023-07-09,2023-07-14,English Muffin,20
+Page One Fast Food,2023-07-09,2023-07-14,White Loaf,2
+Page One Fast Food,2023-07-09,2023-07-14,Hamburger Bun,50
+Jimmy's Diner,2023-07-09,2023-07-14,Bagel,16
+Jimmy's Diner,2023-07-09,2023-07-14,White Loaf,3
+Jimmy's Diner,2023-07-09,2023-07-14,Whole Wheat Loaf,4
+Jimmy's Diner,2023-07-09,2023-07-14,Hamburger Bun,10
+Metro Fine Foods,2023-07-09,2023-07-14,Baguette,20
+Metro Fine Foods,2023-07-09,2023-07-14,Rye Loaf,4
+Metro Fine Foods,2023-07-09,2023-07-14,White Loaf,12
+Metro Fine Foods,2023-07-09,2023-07-14,Whole Wheat Loaf,16
