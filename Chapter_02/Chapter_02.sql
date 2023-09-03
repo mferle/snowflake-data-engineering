@@ -5,9 +5,9 @@ create schema ORDERS;
 create warehouse BAKERY_WH with warehouse_size = 'XSMALL';
 
 -- create named internal stage
-create stage orders_stage;
+create stage ORDERS_STAGE;
 -- view contents of the stage (will be empty upon creation)
-list @orders_stage;
+list @ORDERS_STAGE;
 
 -- create staging table
 create or replace table ORDERS_STG (
@@ -25,14 +25,17 @@ create or replace table ORDERS_STG (
 select $1, $2, $3, $4, $5 from @ORDERS_STAGE;
 
 -- truncate the staging table before loading data to remove any data from previous loads
-truncate table orders_stg;
+truncate table ORDERS_STG;
 
 -- copy data from the internal stage to the staging table using parameters:
 -- - file_format to specify that the header line is to be skipped
 -- - on_error to specify that the statement is to be aborted if an error is encountered
 -- - purge the csv file from the internal stage after loading data
 copy into ORDERS_STG
-from (select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() from @ORDERS_STAGE)
+from (
+  select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() 
+  from @ORDERS_STAGE
+)
 file_format = (type = csv, skip_header = 1)
 on_error = abort_statement
 purge = true;
@@ -47,7 +50,7 @@ from ORDERS_STG
 qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1;
 
 -- create the target table
-create or replace table customer_orders(
+create or replace table CUSTOMER_ORDERS (
   customer varchar,
   order_date date,
   delivery_date date,
@@ -62,7 +65,7 @@ create or replace table customer_orders(
 merge into CUSTOMER_ORDERS tgt
 using (
   select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name
-  from orders_stg
+  from ORDERS_STG
   qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1
 ) as src
 on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
@@ -78,8 +81,8 @@ select * from CUSTOMER_ORDERS order by delivery_date desc;
 
 -- construct a SQL query that summarizes the customer order data by delivery date, and baked good type
 select delivery_date, baked_good_type, sum(quantity) as total_quantity
-    from CUSTOMER_ORDERS
-    group by all;
+  from CUSTOMER_ORDERS
+  group by all;
 
 -- create summary table
 create or replace table SUMMARY_ORDERS(
@@ -104,13 +107,16 @@ insert into SUMMARY_ORDERS(delivery_date, baked_good_type, total_quantity)
 -- - inserts summarized data into the summary table
 -- - executes every 10 minutes (for testing) - later will be rescheduled to run once every evening
 create or replace task PROCESS_ORDERS
-warehouse = BAKERY_WH
+  warehouse = BAKERY_WH
   schedule = '5 M'
 as
 begin
-  truncate table orders_stg;
+  truncate table ORDERS_STG;
   copy into ORDERS_STG
-  from (select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() from @ORDERS_STAGE)
+  from (
+    select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() 
+    from @ORDERS_STAGE
+  )
   file_format = (type = csv, skip_header = 1)
   on_error = abort_statement
   purge = true;
@@ -118,7 +124,7 @@ begin
   merge into CUSTOMER_ORDERS tgt
   using (
     select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name
-    from orders_stg
+    from ORDERS_STG
     qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1
   ) as src
   on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
@@ -150,6 +156,10 @@ alter task PROCESS_ORDERS resume;
 select *
   from table(information_schema.task_history())
   order by scheduled_time desc;
+
+-- change the task schedule to run at 11PM using UTC timezone
+alter task PROCESS_ORDERS
+set schedule = 'USING CRON 0 23 * * * UTC';
 
 -- when done, suspend the task so that it doesn't continue to execute and consume credits
 alter task PROCESS_ORDERS suspend;
