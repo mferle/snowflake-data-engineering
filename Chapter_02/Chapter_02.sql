@@ -88,7 +88,7 @@ select delivery_date, baked_good_type, sum(quantity) as total_quantity
 create or replace table SUMMARY_ORDERS(
   delivery_date date,
   baked_good_type varchar,
-  total_quantity number,
+  total_quantity number
 );
 
 -- truncate summary table
