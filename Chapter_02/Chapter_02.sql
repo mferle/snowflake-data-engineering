@@ -6,11 +6,19 @@ create warehouse BAKERY_WH with warehouse_size = 'XSMALL';
 
 -- create named internal stage
 create stage ORDERS_STAGE;
--- view contents of the stage (will be empty upon creation)
+-- view the contents of the stage (will be empty upon creation)
 list @ORDERS_STAGE;
 
+-- manually upload file Orders_2023-07-07.csv into the internal stage using the Snowsight user interface
+
+-- view the contents of the stage again (should show the file that was just uploaded)
+list @ORDERS_STAGE;
+
+-- then view data in the internal stage
+select $1, $2, $3, $4, $5 from @ORDERS_STAGE;
+
 -- create staging table
-create or replace table ORDERS_STG (
+create table ORDERS_STG (
   customer varchar,
   order_date date,
   delivery_date date,
@@ -19,13 +27,6 @@ create or replace table ORDERS_STG (
   source_file_name varchar,
   load_ts timestamp
 );
-
--- upload a csv file to the internal stage using the Snowsight UI
--- then view data in the internal stage
-select $1, $2, $3, $4, $5 from @ORDERS_STAGE;
-
--- truncate the staging table before loading data to remove any data from previous loads
-truncate table ORDERS_STG;
 
 -- copy data from the internal stage to the staging table using parameters:
 -- - file_format to specify that the header line is to be skipped
@@ -43,11 +44,8 @@ purge = true;
 -- view the data that was loaded
 select * from ORDERS_STG;
 
--- construct a SQL query that eliminites duplicate records: 
--- - for each customer, delivery date and baked good type take the latest quantity by order date
-select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name, load_ts
-from ORDERS_STG
-qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1;
+-- view the contents of the stage again (should be empty again because the file was purged after loading)
+list @ORDERS_STAGE;
 
 -- create the target table
 create or replace table CUSTOMER_ORDERS (
@@ -59,6 +57,12 @@ create or replace table CUSTOMER_ORDERS (
   source_file_name varchar,
   load_ts timestamp
 );
+
+-- construct a SQL query that eliminites duplicate records: 
+-- - for each customer, delivery date and baked good type take the latest quantity by order date
+select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name, load_ts
+from ORDERS_STG
+qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1;
 
 -- merge data from the staging table into the target table
 -- using the SQL query that eliminates duplicate records so that only the latest data is taken into consideration
@@ -79,25 +83,29 @@ when not matched then
 -- view data after merging
 select * from CUSTOMER_ORDERS order by delivery_date desc;
 
--- construct a SQL query that summarizes the customer order data by delivery date, and baked good type
-select delivery_date, baked_good_type, sum(quantity) as total_quantity
-  from CUSTOMER_ORDERS
-  group by all;
-
 -- create summary table
-create or replace table SUMMARY_ORDERS(
+create table SUMMARY_ORDERS(
   delivery_date date,
   baked_good_type varchar,
   total_quantity number
 );
 
+-- construct a SQL query that summarizes the customer order data by delivery date, and baked good type
+select delivery_date, baked_good_type, sum(quantity) as total_quantity
+  from CUSTOMER_ORDERS
+  group by all;
+
 -- truncate summary table
 truncate table SUMMARY_ORDERS;
+
 -- insert summarized data into the summary table
 insert into SUMMARY_ORDERS(delivery_date, baked_good_type, total_quantity)
   select delivery_date, baked_good_type, sum(quantity) as total_quantity
   from CUSTOMER_ORDERS
   group by all;
+
+-- view data in the summary table
+select * from SUMMARY_ORDERS order by delivery_date;
 
 -- create task that executes the previous steps on schedule:
 -- - truncates the staging table
@@ -108,7 +116,7 @@ insert into SUMMARY_ORDERS(delivery_date, baked_good_type, total_quantity)
 -- - executes every 10 minutes (for testing) - later will be rescheduled to run once every evening
 create or replace task PROCESS_ORDERS
   warehouse = BAKERY_WH
-  schedule = '5 M'
+  schedule = '10 M'
 as
 begin
   truncate table ORDERS_STG;
@@ -149,17 +157,23 @@ use role sysadmin;
 -- manually execute task to test
 execute task PROCESS_ORDERS;
 
--- when the task is created it is initially suspended, must be manually resumed
-alter task PROCESS_ORDERS resume;
-
 -- view all previous and scheduled task executions
 select *
   from table(information_schema.task_history())
   order by scheduled_time desc;
+  
+-- when the task is created it is initially suspended, must be manually resumed
+alter task PROCESS_ORDERS resume;
 
 -- change the task schedule to run at 11PM using UTC timezone
+-- must suspend task first and resume after changing the schedule
+alter task PROCESS_ORDERS suspend;
+
 alter task PROCESS_ORDERS
 set schedule = 'USING CRON 0 23 * * * UTC';
 
+alter task PROCESS_ORDERS resume;
+
 -- when done, suspend the task so that it doesn't continue to execute and consume credits
 alter task PROCESS_ORDERS suspend;
+
