@@ -5,7 +5,7 @@ create storage integration BISTRO_INTEGRATION
   type = external_stage
   storage_provider = 'AZURE'
   enabled = true
-  azure_tenant_id = '0e91cd6e-97ac-474a-9faa-1fc8819bed59'
+  azure_tenant_id = '1234abcd-xxx-56efgh78'
   storage_allowed_locations = ('azure://bakeryorders.blob.core.windows.net/orderfiles/');
 
 -- describe the storage integration and take note of the following parameters:
@@ -26,13 +26,15 @@ create stage BISTRO_STAGE
   storage_integration = BISTRO_INTEGRATION
   url = 'azure://bakeryorders.blob.core.windows.net/orderfiles';
 
+-- Upload a sample file named Orders_2023-08-04.csv to the storage container
+
 -- view files in the external stage
 list @BISTRO_STAGE;
 
 -- create an external stage using a SAS token
 create stage BISTRO_SAS_STAGE
-  URL='azure://bakeryorders.blob.core.windows.net/orderfiles'
-  CREDENTIALS=(AZURE_SAS_TOKEN='?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2024-09-23T16:19:40Z&st=2023-09-23T08:19:40Z&spr=https&sig=Ua34g55ktMvXu1dmZh02XfQsWiA6iCvlycu257bdj%2B8%3D');
+  URL = 'azure://bakeryorders.blob.core.windows.net/orderfiles'
+  CREDENTIALS=(AZURE_SAS_TOKEN = '?sv=2023-...%3D');
 
 -- view files in the external stage
 list @BISTRO_SAS_STAGE;
@@ -67,7 +69,6 @@ from (
   from @BISTRO_STAGE
 )
 on_error = abort_statement
-purge = true
 ;
 
 -- view data in the staging table
@@ -90,13 +91,14 @@ alter stage BISTRO_STAGE refresh;
 select * 
 from directory (@BISTRO_STAGE);
 
--- load data from the stage into the staging table from a path
+-- Upload additional CSV files to the container in the 202308 path
+
+-- load data from the stage into the staging table by specifying a path
 copy into ORDERS_BISTRO_STG
 from (
   select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() 
-  from @BISTRO_STAGE/2023
+  from @BISTRO_STAGE/202308
 )
-force = true
 on_error = abort_statement
 ;
 
