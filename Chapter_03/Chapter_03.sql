@@ -5,7 +5,7 @@ create storage integration BISTRO_INTEGRATION
   type = external_stage
   storage_provider = 'AZURE'
   enabled = true
-  azure_tenant_id = '1234abcd-xxx-56efgh78'
+  azure_tenant_id = '1234abcd-xxx-56efgh78' --use your own Tenant ID
   storage_allowed_locations = ('azure://bakeryorders.blob.core.windows.net/orderfiles/');
 
 -- describe the storage integration and take note of the following parameters:
@@ -18,6 +18,8 @@ grant usage on integration BISTRO_INTEGRATION to role SYSADMIN;
 
 -- create a new schema in the BAKERY_DB database (see Chapter 2)
 use role SYSADMIN;
+create warehouse if not exists BAKERY_WH with warehouse_size = 'XSMALL';
+create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 create schema EXTERNAL_ORDERS;
 
@@ -34,7 +36,7 @@ list @BISTRO_STAGE;
 -- create an external stage using a SAS token
 create stage BISTRO_SAS_STAGE
   URL = 'azure://bakeryorders.blob.core.windows.net/orderfiles'
-  CREDENTIALS=(AZURE_SAS_TOKEN = '?sv=2023-...%3D');
+  CREDENTIALS=(AZURE_SAS_TOKEN = '?sv=2023-...%3D'); --generate and use your own SAS token
 
 -- view files in the external stage
 list @BISTRO_SAS_STAGE;
