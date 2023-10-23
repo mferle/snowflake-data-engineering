@@ -25,7 +25,7 @@ use database BAKERY_DB;
 create schema EXTERNAL_JSON_ORDERS;
 
 -- create an external stage using the storage integration
-create or replace stage PARK_INN_STAGE
+create stage PARK_INN_STAGE
   storage_integration = PARK_INN_INTEGRATION
   url = 'azure://parkinnorders.blob.core.windows.net/orderjsonfiles'
   file_format = (type = json);
@@ -33,10 +33,11 @@ create or replace stage PARK_INN_STAGE
 -- view files in the external stage
 list @PARK_INN_STAGE;
 
+-- view data in the staged file
 select $1 from @PARK_INN_STAGE;
 
 -- create staging table for restaurant orders in raw (json) format
-create or replace table ORDERS_PARK_INN_RAW_STG (
+create table ORDERS_PARK_INN_RAW_STG (
   customer_orders variant,
   source_file_name varchar,
   load_ts timestamp
@@ -45,7 +46,10 @@ create or replace table ORDERS_PARK_INN_RAW_STG (
 -- load data from the stage into the staging table
 copy into ORDERS_PARK_INN_RAW_STG
 from (
-  select $1, metadata$filename, current_timestamp() 
+  select 
+    $1, 
+    metadata$filename, 
+    current_timestamp() 
   from @PARK_INN_STAGE
 )
 on_error = abort_statement
@@ -55,16 +59,48 @@ on_error = abort_statement
 select * 
 from ORDERS_PARK_INN_RAW_STG;
 
-select customer_orders
+-- select the values from the first level keys
+select 
+  customer_orders:"Customer"::varchar as customer, 
+  customer_orders:"Order date"::date as order_date, 
+  customer_orders:"Orders"
 from ORDERS_PARK_INN_RAW_STG;
 
+-- select the values from the second level keys using LATERAL FLATTEN
 select 
-  customer_orders:Customer::varchar as customer, 
+  customer_orders:"Customer"::varchar as customer, 
+  customer_orders:"Order date"::date as order_date, 
+  value:"Delivery date"::date as delivery_date,
+  value:"Orders by day"
+from ORDERS_PARK_INN_RAW_STG,
+lateral flatten (input => customer_orders:"Orders");
+
+-- select the values from the third level keys using another LATERAL FLATTEN
+select 
+  customer_orders:"Customer"::varchar as customer, 
   customer_orders:"Order date"::date as order_date, 
   CO.value:"Delivery date"::date as delivery_date,
   DO.value:"Baked good type":: varchar as baked_good_type,
   DO.value:"Quantity"::number as quantity
 from ORDERS_PARK_INN_RAW_STG,
 lateral flatten (input => customer_orders:"Orders") CO,
-lateral flatten (input => CO.value:"Daily orders") DO;
+lateral flatten (input => CO.value:"Orders by day") DO;
 
+-- create a view to represent a relational staging table using the previous query
+
+create view ORDERS_PARK_INN_STG as
+select 
+  customer_orders:"Customer"::varchar as customer, 
+  customer_orders:"Order date"::date as order_date, 
+  CO.value:"Delivery date"::date as delivery_date,
+  DO.value:"Baked good type":: varchar as baked_good_type,
+  DO.value:"Quantity"::number as quantity,
+  source_file_name,
+  load_ts
+from ORDERS_PARK_INN_RAW_STG,
+lateral flatten (input => customer_orders:"Orders") CO,
+lateral flatten (input => CO.value:"Orders by day") DO;
+
+-- view data in the view
+select *
+from ORDERS_PARK_INN_STG;

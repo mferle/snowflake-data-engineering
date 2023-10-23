@@ -4,7 +4,7 @@
 	"Orders": [
 		{
 			"Delivery date": "2023-08-14",
-			"Daily orders": [
+			"Orders by day": [
 				{
 					"Baked good type": "English Muffin",
 					"Quantity": 30
@@ -29,7 +29,7 @@
 		},
 		{
 			"Delivery date": "2023-08-15",
-			"Daily orders": [
+			"Orders by day": [
 				{
 					"Baked good type": "English Muffin",
 					"Quantity": 26
