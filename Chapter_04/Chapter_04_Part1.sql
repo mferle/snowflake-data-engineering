@@ -6,7 +6,7 @@ create storage integration PARK_INN_INTEGRATION
   storage_provider = 'AZURE'
   enabled = true
   azure_tenant_id = '1234abcd-xxx-56efgh78' --use your own Tenant ID
-  storage_allowed_locations = ('azure://parkinnorders.blob.core.windows.net/orderjsonfiles/');
+  storage_allowed_locations = ('azure://parkinnorders001.blob.core.windows.net/orderjsonfiles/');
 
 -- describe the storage integration and take note of the following parameters:
 -- - AZURE_CONSENT_URL
@@ -20,14 +20,16 @@ grant usage on integration PARK_INN_INTEGRATION to role SYSADMIN;
 
 use role SYSADMIN;
 create warehouse if not exists BAKERY_WH with warehouse_size = 'XSMALL';
+use warehouse BAKERY_WH;
 create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 create schema EXTERNAL_JSON_ORDERS;
+use schema EXTERNAL_JSON_ORDERS;
 
 -- create an external stage using the storage integration
 create stage PARK_INN_STAGE
   storage_integration = PARK_INN_INTEGRATION
-  url = 'azure://parkinnorders.blob.core.windows.net/orderjsonfiles'
+  url = 'azure://parkinnorders001.blob.core.windows.net/orderjsonfiles'
   file_format = (type = json);
 
 -- view files in the external stage

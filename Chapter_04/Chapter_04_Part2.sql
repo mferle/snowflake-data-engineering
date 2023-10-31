@@ -1,6 +1,10 @@
 use role SYSADMIN;
+create warehouse if not exists BAKERY_WH with warehouse_size = 'XSMALL';
+use warehouse BAKERY_WH;
+create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 create schema TRANSFORM;
+use schema TRANSFORM;
 
 -- create a view that combines data from individual staging tables
 create view ORDERS_COMBINED_STG as
@@ -67,7 +71,6 @@ when not matched then
   values(src.customer, src.order_date, src.delivery_date,
     src.baked_good_type, src.quantity, src.source_file_name,
     current_timestamp());
-
 end;
 $$
 ;
@@ -104,7 +107,9 @@ when not matched then
     src.baked_good_type, src.quantity, src.source_file_name,
     current_timestamp());
   return 'Load completed. ' || SQLROWCOUNT || ' rows affected.';
-
+exception
+  when other then
+    return 'Load failed with error message: ' || SQLERRM;
 end;
 $$
 ;
