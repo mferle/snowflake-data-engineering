@@ -6,7 +6,7 @@ create storage integration SPEEDY_INTEGRATION
   storage_provider = 'AZURE'
   enabled = true
   azure_tenant_id = '1234abcd-xxx-56efgh78' --use your own Tenant ID
-  storage_allowed_locations = ('azure://speedyorders.blob.core.windows.net/speedyservicefiles/');;
+  storage_allowed_locations = ('azure://speedyorders001.blob.core.windows.net/speedyservicefiles/');;
 
 -- describe the storage integration and take note of the following parameters:
 -- - AZURE_CONSENT_URL
@@ -22,11 +22,12 @@ create warehouse if not exists BAKERY_WH with warehouse_size = 'XSMALL';
 create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 create schema DELIVERY_ORDERS;
+use schema DELIVERY_ORDERS;
 
 -- create an external stage using the storage integration
 create stage SPEEDY_STAGE
   storage_integration = SPEEDY_INTEGRATION
-  url = 'azure://speedyorders.blob.core.windows.net/speedyservicefiles/'
+  url = 'azure://speedyorders001.blob.core.windows.net/speedyservicefiles/'
   file_format = (type = json);
 
 -- view files in the external stage
@@ -59,7 +60,7 @@ CREATE NOTIFICATION INTEGRATION SPEEDY_QUEUE_INTEGRATION
 ENABLED = true
 TYPE = QUEUE
 NOTIFICATION_PROVIDER = AZURE_STORAGE_QUEUE
-AZURE_STORAGE_QUEUE_PRIMARY_URI = 'https://speedyorders.queue.core.windows.net/speedyordersqueue'
+AZURE_STORAGE_QUEUE_PRIMARY_URI = 'https://speedyorders001.queue.core.windows.net/speedyordersqueue'
 AZURE_TENANT_ID = '1234abcd-xxx-56efgh78';
 
 -- describe the storage integration and take note of the following parameters:
@@ -77,18 +78,18 @@ create pipe SPEEDY_PIPE
   integration = 'SPEEDY_QUEUE_INTEGRATION'
   as
   copy into SPEEDY_ORDERS_RAW_STG
-from (
-  select 
-    $1:"Order id",
-    $1:"Order datetime",
-    $1:"Items",
-    metadata$filename, 
-    current_timestamp() 
-  from @SPEEDY_STAGE
-);
+  from (
+    select 
+      $1:"Order id",
+      $1:"Order datetime",
+      $1:"Items",
+      metadata$filename, 
+      current_timestamp() 
+    from @SPEEDY_STAGE
+  );
 
 -- load historical data from files that existed in the external stage before Event Grid messages were configured
-alter pipe SPEEDY_PIPE REFRESH;
+alter pipe SPEEDY_PIPE refresh;
 
 -- view data in the staging table
 select * 
@@ -97,26 +98,27 @@ from SPEEDY_ORDERS_RAW_STG;
 -- check the status of the pipe
 select system$pipe_status('SPEEDY_PIPE');
 
--- select the values from the first level keys
-select
-  order_id,
-  order_datetime,
-  items
-from SPEEDY_ORDERS_RAW_STG;
+-- view the copy history in the last hour
+select *
+from table(information_schema.copy_history(
+  table_name => 'SPEEDY_ORDERS_RAW_STG', 
+  start_time => dateadd(hours, -1, current_timestamp())));
 
 -- select the values from the second level keys
 select
   order_id,
   order_datetime,
-  items,
   value:"Item"::varchar as baked_good_type,
   value:"Quantity"::number as quantity
 from SPEEDY_ORDERS_RAW_STG,
 lateral flatten (input => items);
 
--- create a view to represent a relational staging table using the previous query
-create view SPEEDY_ORDERS_STG as
-select
+-- create a dynamic table that materializes the output of the previous query
+create dynamic table SPEEDY_ORDERS
+  target_lag = '1 minute'
+  warehouse = BAKERY_WH
+  as 
+  select
   order_id,
   order_datetime,
   value:"Item"::varchar as baked_good_type,
@@ -126,6 +128,7 @@ select
 from SPEEDY_ORDERS_RAW_STG,
 lateral flatten (input => items);
 
--- view data in the view
+-- query the data in the dynamic table
 select *
-from SPEEDY_ORDERS_STG;
+from SPEEDY_ORDERS
+order by order_datetime desc;
