@@ -1,10 +1,12 @@
--- initial setup: create database, schema and warehouse
+-- initial setup: create database, schema and virtual warehouse
 use role SYSADMIN;
 create database BAKERY_DB;
 create schema ORDERS;
 create warehouse BAKERY_WH with warehouse_size = 'XSMALL';
 
 -- create named internal stage
+use database BAKERY_DB;
+use schema ORDERS;
 create stage ORDERS_STAGE;
 -- view the contents of the stage (will be empty upon creation)
 list @ORDERS_STAGE;
@@ -18,6 +20,8 @@ list @ORDERS_STAGE;
 select $1, $2, $3, $4, $5 from @ORDERS_STAGE;
 
 -- create staging table
+use database BAKERY_DB;
+use schema ORDERS;
 create table ORDERS_STG (
   customer varchar,
   order_date date,
@@ -32,6 +36,8 @@ create table ORDERS_STG (
 -- - file_format to specify that the header line is to be skipped
 -- - on_error to specify that the statement is to be aborted if an error is encountered
 -- - purge the csv file from the internal stage after loading data
+use database BAKERY_DB;
+use schema ORDERS;
 copy into ORDERS_STG
 from (
   select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() 
@@ -48,6 +54,8 @@ select * from ORDERS_STG;
 list @ORDERS_STAGE;
 
 -- create the target table
+use database BAKERY_DB;
+use schema ORDERS;
 create or replace table CUSTOMER_ORDERS (
   customer varchar,
   order_date date,
@@ -58,32 +66,36 @@ create or replace table CUSTOMER_ORDERS (
   load_ts timestamp
 );
 
--- construct a SQL query that eliminites duplicate records: 
--- - for each customer, delivery date and baked good type take the latest quantity by order date
-select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name, load_ts
-from ORDERS_STG
-qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1;
 
 -- merge data from the staging table into the target table
--- using the SQL query that eliminates duplicate records so that only the latest data is taken into consideration
+-- the target table
 merge into CUSTOMER_ORDERS tgt
-using (
-  select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name
-  from ORDERS_STG
-  qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1
-) as src
-on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
+-- the source table
+using ORDERS_STG as src 
+-- the columns that ensure uniqueness
+on src.customer = tgt.customer 
+  and src.delivery_date = tgt.delivery_date 
+  and src.baked_good_type = tgt.baked_good_type
+-- update the target table with the values from the source table
 when matched then 
-  update set tgt.quantity = src.quantity, tgt.source_file_name = src.source_file_name, tgt.load_ts = current_timestamp()
+  update set tgt.quantity = src.quantity, 
+    tgt.source_file_name = src.source_file_name, 
+    tgt.load_ts = current_timestamp()
+-- insert new values from the source table into the target table
 when not matched then
-  insert (customer, order_date, delivery_date, baked_good_type, quantity, source_file_name, load_ts)
-  values(src.customer, src.order_date, src.delivery_date, src.baked_good_type, src.quantity, src.source_file_name, current_timestamp())
-;
+  insert (customer, order_date, delivery_date, baked_good_type, 
+    quantity, source_file_name, load_ts)
+  values(src.customer, src.order_date, src.delivery_date, 
+    src.baked_good_type, src.quantity, src.source_file_name,
+    current_timestamp());
+
 
 -- view data after merging
 select * from CUSTOMER_ORDERS order by delivery_date desc;
 
 -- create summary table
+use database BAKERY_DB;
+use schema ORDERS;
 create table SUMMARY_ORDERS(
   delivery_date date,
   baked_good_type varchar,
@@ -114,6 +126,8 @@ select * from SUMMARY_ORDERS order by delivery_date;
 -- - truncates the summary table
 -- - inserts summarized data into the summary table
 -- - executes every 10 minutes (for testing) - later will be rescheduled to run once every evening
+use database BAKERY_DB;
+use schema ORDERS;
 create or replace task PROCESS_ORDERS
   warehouse = BAKERY_WH
   schedule = '10 M'
@@ -130,11 +144,7 @@ begin
   purge = true;
 
   merge into CUSTOMER_ORDERS tgt
-  using (
-    select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name
-    from ORDERS_STG
-    qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1
-  ) as src
+  using ORDERS_STG as src
   on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
   when matched then 
     update set tgt.quantity = src.quantity, tgt.source_file_name = src.source_file_name, tgt.load_ts = current_timestamp()
@@ -176,4 +186,3 @@ alter task PROCESS_ORDERS resume;
 
 -- when done, suspend the task so that it doesn't continue to execute and consume credits
 alter task PROCESS_ORDERS suspend;
-

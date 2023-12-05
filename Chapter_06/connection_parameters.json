@@ -1,0 +1,9 @@
+{
+    "account"                 : "qy56747.eu-central-1",
+    "user"                    : "mferle",
+    "password"                : "2jnHcQUBVv7qaTxDie1P",
+    "role"                    : "SYSADMIN",
+    "warehouse"               : "BAKERY_WH",
+    "database"                : "BAKERY_DB",
+    "schema"                  : "SNOWPARK"
+}

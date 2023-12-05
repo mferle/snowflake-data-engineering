@@ -54,6 +54,11 @@ create table SPEEDY_ORDERS_RAW_STG (
   load_ts timestamp
 );
 
+-- configure event grid messages for blob storage events
+-- - enable the event grid resource provider
+-- - create a storage queue and take note of the queue URL
+-- - create an event grid subscription with an event grid system topic for the "Blob Created" event
+
 -- create a notification integration
 use role ACCOUNTADMIN;
 CREATE NOTIFICATION INTEGRATION SPEEDY_QUEUE_INTEGRATION
@@ -132,3 +137,8 @@ lateral flatten (input => items);
 select *
 from SPEEDY_ORDERS
 order by order_datetime desc;
+
+-- query the dynamic table refresh history
+select *
+from table(information_schema.dynamic_table_refresh_history())
+order by refresh_start_time desc;
