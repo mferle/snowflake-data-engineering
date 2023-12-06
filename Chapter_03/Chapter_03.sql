@@ -11,7 +11,7 @@ create storage integration BISTRO_INTEGRATION
 -- describe the storage integration and take note of the following parameters:
 -- - AZURE_CONSENT_URL
 -- - AZURE_MULTI_TENANT_APP_NAME
-describe integration BISTRO_INTEGRATION;
+describe storage integration BISTRO_INTEGRATION;
 
 -- grant usage on storage integration so that the SYSADMIN role can use it
 grant usage on integration BISTRO_INTEGRATION to role SYSADMIN;
@@ -22,6 +22,7 @@ create warehouse if not exists BAKERY_WH with warehouse_size = 'XSMALL';
 create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 create schema EXTERNAL_ORDERS;
+use schema EXTERNAL_ORDERS;
 
 -- create an external stage using the storage integration
 create stage BISTRO_STAGE
@@ -54,6 +55,8 @@ create or replace stage BISTRO_STAGE
   file_format = ORDERS_CSV_FORMAT;
 
 -- create staging table for restaurant orders
+use database BAKERY_DB;
+use schema EXTERNAL_ORDERS;
 create table ORDERS_BISTRO_STG (
   customer varchar,
   order_date date,
@@ -105,6 +108,8 @@ on_error = abort_statement
 ;
 
 -- create an external table 
+use database BAKERY_DB;
+use schema EXTERNAL_ORDERS;
 create external table ORDERS_BISTRO_EXT (
   customer varchar as (VALUE:c1::varchar),
   order_date date as (VALUE:c2::date),
@@ -125,6 +130,8 @@ from ORDERS_BISTRO_EXT;
 alter external table ORDERS_BISTRO_EXT refresh;
 
 -- create a materialized view
+use database BAKERY_DB;
+use schema EXTERNAL_ORDERS;
 create materialized view ORDERS_BISTRO_MV as
 select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name
 from ORDERS_BISTRO_EXT;
