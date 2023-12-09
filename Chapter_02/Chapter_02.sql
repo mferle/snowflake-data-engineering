@@ -36,6 +36,7 @@ create table ORDERS_STG (
 -- - file_format to specify that the header line is to be skipped
 -- - on_error to specify that the statement is to be aborted if an error is encountered
 -- - purge the csv file from the internal stage after loading data
+-- Listing 2.1 
 use database BAKERY_DB;
 use schema ORDERS;
 copy into ORDERS_STG
@@ -68,6 +69,7 @@ create or replace table CUSTOMER_ORDERS (
 
 
 -- merge data from the staging table into the target table
+-- Listing 2.2  
 -- the target table
 merge into CUSTOMER_ORDERS tgt
 -- the source table
@@ -111,6 +113,7 @@ select delivery_date, baked_good_type, sum(quantity) as total_quantity
 truncate table SUMMARY_ORDERS;
 
 -- insert summarized data into the summary table
+-- Listing 2.3 
 insert into SUMMARY_ORDERS(delivery_date, baked_good_type, total_quantity)
   select delivery_date, baked_good_type, sum(quantity) as total_quantity
   from CUSTOMER_ORDERS
@@ -168,6 +171,7 @@ use role sysadmin;
 execute task PROCESS_ORDERS;
 
 -- view all previous and scheduled task executions
+-- Listing 2.4 
 select *
   from table(information_schema.task_history())
   order by scheduled_time desc;

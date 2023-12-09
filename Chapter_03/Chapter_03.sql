@@ -1,4 +1,6 @@
 -- create a storage integration
+-- using Microsoft Azure
+-- refer to Chapter 4 for Amazon S3
 use role ACCOUNTADMIN;
 
 create storage integration BISTRO_INTEGRATION
@@ -25,6 +27,7 @@ create schema EXTERNAL_ORDERS;
 use schema EXTERNAL_ORDERS;
 
 -- create an external stage using the storage integration
+-- Listing 3.1 
 create stage BISTRO_STAGE
   storage_integration = BISTRO_INTEGRATION
   url = 'azure://bakeryorders001.blob.core.windows.net/orderfiles';
@@ -68,6 +71,7 @@ create table ORDERS_BISTRO_STG (
 );
 
 -- load data from the stage into the staging table
+-- Listing 3.3 
 copy into ORDERS_BISTRO_STG
 from (
   select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() 
@@ -108,6 +112,7 @@ on_error = abort_statement
 ;
 
 -- create an external table 
+-- Listing 3.4 
 use database BAKERY_DB;
 use schema EXTERNAL_ORDERS;
 create external table ORDERS_BISTRO_EXT (

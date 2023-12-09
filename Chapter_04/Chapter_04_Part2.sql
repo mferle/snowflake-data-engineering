@@ -18,7 +18,9 @@ select customer, order_date, delivery_date, baked_good_type, quantity, source_fi
 from bakery_db.external_json_orders.ORDERS_PARK_INN_STG;
 
 -- create target table that will store historical orders combined from all sources
-create or replace table CUSTOMER_ORDERS_COMBINED (
+use database BAKERY_DB;
+use schema TRANSFORM;
+use schema TRANSFORM;create or replace table CUSTOMER_ORDERS_COMBINED (
   customer varchar,
   order_date date,
   delivery_date date,
@@ -29,12 +31,9 @@ create or replace table CUSTOMER_ORDERS_COMBINED (
 );
 
 -- merge combined staging data into the target table
+-- Listing 4.5 
 merge into CUSTOMER_ORDERS_COMBINED tgt
-using (
-  select customer, order_date, delivery_date, baked_good_type, quantity, source_file_name
-  from ORDERS_COMBINED_STG
-  qualify row_number() over (partition by customer, delivery_date, baked_good_type order by order_date desc) = 1
-) as src
+using ORDERS_COMBINED_STG as src
 on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
 when matched then 
   update set tgt.quantity = src.quantity, tgt.source_file_name = src.source_file_name, tgt.load_ts = current_timestamp()
@@ -44,6 +43,9 @@ when not matched then
 ;
 
 -- create a stored procedure that executes the previous MERGE statement
+-- Listing 4.6 
+use database BAKERY_DB;
+use schema TRANSFORM;
 create or replace procedure LOAD_CUSTOMER_ORDERS()
 returns varchar
 language sql
@@ -51,15 +53,7 @@ as
 $$
 begin
   merge into CUSTOMER_ORDERS_COMBINED tgt
-using (
-  select customer, order_date, delivery_date, 
-    baked_good_type, quantity, source_file_name
-  from ORDERS_COMBINED_STG
-  qualify row_number() over (
-    partition by customer, delivery_date, baked_good_type 
-    order by order_date desc
-  ) = 1
-) as src
+using ORDERS_COMBINED_STG as src
 on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
 when matched then 
   update set tgt.quantity = src.quantity, 
@@ -79,22 +73,17 @@ $$
 call LOAD_CUSTOMER_ORDERS();
 
 -- modify the stored procedure: add return string
-create or replace procedure LOAD_CUSTOMER_ORDERS()
+use database BAKERY_DB;
+use schema TRANSFORM;
+-- Listing 4.8
+create procedure LOAD_CUSTOMER_ORDERS()
 returns varchar
 language sql
 as
 $$
 begin
   merge into CUSTOMER_ORDERS_COMBINED tgt
-using (
-  select customer, order_date, delivery_date, 
-    baked_good_type, quantity, source_file_name
-  from ORDERS_COMBINED_STG
-  qualify row_number() over (
-    partition by customer, delivery_date, baked_good_type 
-    order by order_date desc
-  ) = 1
-) as src
+using ORDERS_COMBINED_STG as src
 on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
 when matched then 
   update set tgt.quantity = src.quantity, 
@@ -107,9 +96,6 @@ when not matched then
     src.baked_good_type, src.quantity, src.source_file_name,
     current_timestamp());
   return 'Load completed. ' || SQLROWCOUNT || ' rows affected.';
-exception
-  when other then
-    return 'Load failed with error message: ' || SQLERRM;
 end;
 $$
 ;
@@ -118,6 +104,9 @@ $$
 call LOAD_CUSTOMER_ORDERS();
 
 -- modify the stored procedure: add exception handling
+-- Listing 4.9
+use database BAKERY_DB;
+use schema TRANSFORM;
 create or replace procedure LOAD_CUSTOMER_ORDERS()
 returns varchar
 language sql
@@ -125,15 +114,7 @@ as
 $$
 begin
   merge into CUSTOMER_ORDERS_COMBINED tgt
-using (
-  select customer, order_date, delivery_date, 
-    baked_good_type, quantity, source_file_name
-  from ORDERS_COMBINED_STG
-  qualify row_number() over (
-    partition by customer, delivery_date, baked_good_type 
-    order by order_date desc
-  ) = 1
-) as src
+using ORDERS_COMBINED_STG as src
 on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
 when matched then 
   update set tgt.quantity = src.quantity, 

@@ -32,15 +32,7 @@ my_session = Session.builder.configs(connection_parameters_dict).create()
 def snowpark_load_customer_orders(my_session: Session) -> str:
     sql_statement = f'''
         merge into CUSTOMER_ORDERS tgt
-        using (
-        select customer, order_date, delivery_date, 
-            baked_good_type, quantity
-        from ORDERS_STG
-        qualify row_number() over (
-            partition by customer, delivery_date, baked_good_type
-            order by order_date desc
-        ) = 1
-        ) as src
+        using ORDERS_COMBINED_STG as src
         on src.customer = tgt.customer and src.delivery_date = tgt.delivery_date and src.baked_good_type = tgt.baked_good_type
         when matched then 
         update set tgt.quantity = src.quantity, 
