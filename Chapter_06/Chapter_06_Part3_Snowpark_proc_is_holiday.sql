@@ -7,13 +7,14 @@ create or replace procedure PROC_IS_HOLIDAY(p_date date, p_country string)
     handler = 'is_holiday'
     comment = 'The procedure returns True if the date is a holiday in the country'
     as '
-# the Snowpark package is required for Python Worksheets
+# The Snowpark package is required for Python Worksheets
 import snowflake.snowpark as snowpark
-# importing the holidays package
+# Adding the holidays package
 import holidays
 
+#Listing 6.2
 def is_holiday(session: snowpark.Session, p_date, p_country):
-    # get a list of all holidays in p_country
+    # get a list of all holidays in the US
     all_holidays = holidays.country_holidays(p_country)
     # return TRUE if p_date is a holiday, otherwise return false
     if p_date in all_holidays:

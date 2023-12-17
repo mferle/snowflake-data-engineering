@@ -3,6 +3,7 @@
 # - create and activate a Python virtual environment
 # - install the snowflake-snowpark-python package (using pip or conda, depending on your Python environment)
 
+#Listing 6.3
 # import Session from the snowflake.snowpark package
 from snowflake.snowpark import Session
 

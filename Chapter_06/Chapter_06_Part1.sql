@@ -5,13 +5,6 @@ create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 create schema SNOWPARK;
 use schema SNOWPARK;
-create stage ORDERS_STAGE;
 
-create table CUSTOMER_ORDERS (
-  customer varchar,
-  order_date date,
-  delivery_date date,
-  baked_good_type varchar,
-  quantity number,
-  load_ts timestamp
-);
+-- Section 6.5	Ingesting Data from a CSV File into a Snowflake Table
+create stage ORDERS_STAGE;

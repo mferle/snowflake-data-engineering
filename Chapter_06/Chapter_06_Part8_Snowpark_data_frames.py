@@ -22,7 +22,7 @@ connection_parameters_dict = {
 my_session = Session.builder.configs(connection_parameters_dict).create()
 
 # retrieve tables into data frames
-df_orders = my_session.table("CUSTOMER_ORDERS")
+df_orders = my_session.table("ORDERS_STG")
 df_dim_date = my_session.table("DIM_DATE")
 
 # join the data frames

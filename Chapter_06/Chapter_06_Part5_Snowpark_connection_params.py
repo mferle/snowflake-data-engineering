@@ -1,3 +1,4 @@
+#Listing 6.4
 # import Session from the snowflake.snowpark package
 from snowflake.snowpark import Session
 
@@ -17,9 +18,13 @@ connection_parameters_dict = {
     "schema": credentials["schema"]  # optional
 }  
 
+# create the session
 my_session = Session.builder.configs(connection_parameters_dict).create()
 
+# select the current timestamp
 ts = my_session.sql("select current_timestamp()").collect()
+# print the output to the console
 print(ts)
 
+# close the session
 my_session.close()
