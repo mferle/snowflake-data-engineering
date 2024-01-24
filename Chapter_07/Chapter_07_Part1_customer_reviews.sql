@@ -28,7 +28,7 @@ create secret YELP_API_TOKEN
   secret_string = 'ab12DE...89XYZ';
 
 -- grant usage on the secret to a custom role if that role will be using the secret 
-grant usage on secret YELP_API_TOKEN to role <custom_role>;
+grant read on secret YELP_API_TOKEN to role <custom_role>;
 
 -- create an external access integration
 create external access integration YELP_API_INTEGRATION
