@@ -1,9 +1,10 @@
 -- use the SYSADMIN role and the REVIEwS schema in the BAKERY_DB database
 use role SYSADMIN;
+use database BAKERY_DB;
 use schema REVIEWS;
 
 -- create a network rule
-create network_rule OPENAI_API_NETWORK_RULE
+create network rule OPENAI_API_NETWORK_RULE
   mode = EGRESS
   type = HOST_PORT
   value_list = ('api.openai.com');

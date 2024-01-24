@@ -1,5 +1,6 @@
 -- create a new schema in the BAKERY_DB database (see Chapter 2)
 use role SYSADMIN;
+use database BAKERY_DB;
 use schema REVIEWS;
 
 -- create a stored procedure that calls the API endpoint using the external access integration and the secret

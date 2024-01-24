@@ -24,8 +24,11 @@ create network rule YELP_API_NETWORK_RULE
 
 -- create a secret
 create secret YELP_API_TOKEN
-  xtype = GENERIC_STRING
+  type = GENERIC_STRING
   secret_string = 'ab12DE...89XYZ';
+
+-- grant usage on the secret to a custom role if that role will be using the secret 
+grant usage on secret YELP_API_TOKEN to role <custom_role>;
 
 -- create an external access integration
 create external access integration YELP_API_INTEGRATION
@@ -89,10 +92,12 @@ insert into CUSTOMER_REVIEWS
 select 
   value:"rating"::number as rating, 
   value:"time_created"::timestamp as time_created, 
-  regexp_replace(value:"text"::varchar, '[^a-zA-Z0-9 .,!?-') as customer_review
-from table(flatten(input => 
-  GET_CUSTOMER_REVIEWS('boulangerie-julien-paris-3'):"reviews"
+  regexp_replace(value:"text"::varchar, 
+    '[^a-zA-Z0-9 .,!?-]+')::varchar as customer_review
+from table(flatten(
+  input => GET_CUSTOMER_REVIEWS('boulangerie-julien-paris-3'):"reviews"
 ));
+
 
 -- select data from the table
 select * from CUSTOMER_REVIEWS;

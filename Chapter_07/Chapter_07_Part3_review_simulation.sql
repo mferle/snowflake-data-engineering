@@ -1,4 +1,5 @@
 use role SYSADMIN;
+use database BAKERY_DB;
 use schema REVIEWS;
 
 -- create this UDF as a simulation for REVIEW_SENTIMENT if not using OpenAI's API
