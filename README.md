@@ -8,3 +8,4 @@ Snowflake Data Engineering in Action
 ## Chapter 5: Continuous Data Loading
 ## Chapter 6: Executing Code Natively with Snowpark
 ## Chapter 7: Augmenting Data with Outputs from Large Language Models
+## Chapter 8: Optimizing Query Performance
