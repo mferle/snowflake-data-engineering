@@ -9,3 +9,4 @@ Snowflake Data Engineering in Action
 ## Chapter 6: Executing Code Natively with Snowpark
 ## Chapter 7: Augmenting Data with Outputs from Large Language Models
 ## Chapter 8: Optimizing Query Performance
+## Chapter 9: Controlling Cost

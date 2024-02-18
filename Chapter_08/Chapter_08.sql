@@ -24,6 +24,7 @@ limit 5;
 -- create a new schema in the BAKERY_DB database (see Chapter 2)
 use role SYSADMIN;
 create warehouse if not exists BAKERY_WH with warehouse_size = 'XSMALL';
+use warehouse BAKERY_WH;
 create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 create schema RETAIL_ANALYSIS;
@@ -85,7 +86,7 @@ grant MONITOR USAGE ON ACCOUNT to role SYSADMIN;
 use role SYSADMIN;
 select *
   from table(information_schema.automatic_clustering_history(
-  date_range_start=>dateadd(D, -1, current_date)
+  date_range_start=>dateadd(D, -1, current_date),
   table_name=>'BAKERY_DB.RETAIL_ANALYSIS.RETAILER_SALES'));
 
 -- execute the query from Listing 8.1 again
