@@ -104,3 +104,26 @@ order by distance_km;
 select count(*) from RETAILER_SALES;
 -- open the query profile after executing
 -- note that it is a metadata operation
+
+-- change the AUTO_SUSPEND parameter to 5 minutes (300 seconds)
+alter warehouse BAKERY_WH_XSMALL set AUTO_SUSPEND = 300;
+
+
+-- grant the USAGE_VIEWER database role to SYSADMIN
+use role ACCOUNTADMIN;
+grant database role SNOWFLAKE.USAGE_VIEWER to role SYSADMIN;
+use role SYSADMIN;
+
+-- summarize the queuing time and the total execution time by each warehouse by day for the past 7 days 
+select 
+  to_date(start_time) as start_date, 
+  warehouse_name, 
+  sum(avg_running) as total_running, 
+  sum(avg_queued_load) as total_queued
+from SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_LOAD_HISTORY
+where TO_DATE(start_time) > DATEADD(day,-7,TO_DATE(CURRENT_TIMESTAMP()))
+group by all
+order by 1, 2;
+
+-- limit the number of concurrently running queries to 6
+alter warehouse BAKERY_WH_LARGE set MAX_CONCURRENCY_LEVEL = 6;
