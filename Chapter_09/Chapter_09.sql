@@ -53,7 +53,7 @@ use warehouse BAKERY_WH_SMALL;
 -- notice that the query results were reused
 
 -- set the session so that it doesn't reuse query results - for testing only
-alter session set use_cached_result = false;
+alter session set use_cached_result = FALSE;
 
 -- still using the small warehouse, execute the query above (Listing 9.1)
 -- open the query profile after executing
