@@ -10,3 +10,4 @@ Snowflake Data Engineering in Action
 ## Chapter 7: Augmenting Data with Outputs from Large Language Models
 ## Chapter 8: Optimizing Query Performance
 ## Chapter 9: Controlling Cost
+## Chapter 10: Designing Data Pipelines

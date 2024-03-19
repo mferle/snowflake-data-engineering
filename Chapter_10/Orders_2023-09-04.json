@@ -1,0 +1,48 @@
+{
+	"Customer": "Park Inn",
+	"Order date": "2023-09-04",
+	"Orders": [
+		{
+			"Delivery date": "2023-09-05",
+			"Orders by day": [
+				{
+					"Baked good type": "English Muffin",
+					"Quantity": 26
+				},
+				{
+					"Baked good type": "Whole Wheat Loaf",
+					"Quantity": 4
+				},
+				{
+					"Baked good type": "Bagel",
+					"Quantity": 22
+				},
+				{
+					"Baked good type": "Croissant",
+					"Quantity": 30
+				}
+			]
+		},
+		{
+			"Delivery date": "2023-09-06",
+			"Orders by day": [
+				{
+					"Baked good type": "English Muffin",
+					"Quantity": 12
+				},
+				{
+					"Baked good type": "Whole Wheat Loaf",
+					"Quantity": 5
+				},
+				{
+					"Baked good type": "Blueberry Muffin",
+					"Quantity": 12
+				},
+				{
+					"Baked good type": "Croissant",
+					"Quantity": 25
+				}
+			]
+		}
+	]
+}
