@@ -21,3 +21,5 @@ left join STG.PARTNERS PT
   on PT.partner_name = ORD.customer
 left join STG.PRODUCTS PRD
   on PRD.product_name = ORD.baked_good_type;
+
+select * from ORDERS;

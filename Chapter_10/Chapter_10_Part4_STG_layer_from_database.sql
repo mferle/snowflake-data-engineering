@@ -4,14 +4,14 @@ use database BAKERY_DB;
 use schema STG;
 
 -- create tables in the STG schema, simulating tables populated from the source system using a data integration tool or custom solution
-create table partners (
+create table PARTNERS (
 partner_id integer,
 partner_name varchar,
 address varchar,
 rating varchar
 );
 
-insert into partners values
+insert into PARTNERS values
 (101, 'Coffee Pocket', '501 Courtney Wells', 'A'),
 (102, 'Lily''s Coffee', '2825 Joshua Forest', 'A'),
 (103, 'Crave Coffee', '538 Hayden Port', 'B'),
@@ -25,9 +25,9 @@ insert into partners values
 (111, 'Farm Fresh', '23633 Melanie Ranch', 'A'),
 (112, 'Murphy Mill', '700 Darren Centers', 'A');
 
-select * from partners;
+select * from PARTNERS;
 
-create table products (
+create table PRODUCTS (
 product_id integer,
 product_name varchar,
 category varchar,
@@ -36,7 +36,7 @@ price number(18,2),
 valid_from date
 );
 
-insert into products values
+insert into PRODUCTS values
 (1, 'Baguette', 'Bread', 2, 2.5, '2023-06-01'),
 (2, 'Bagel', 'Bread', 6, 1.3, '2023-06-01'), 
 (3, 'English Muffin', 'Bread', 6, 1.2, '2023-06-01'), 
@@ -50,4 +50,4 @@ insert into products values
 (11, 'Blueberry Muffin', 'Pastry', 12, 3.6, '2023-06-01'), 
 (12, 'Chocolate Muffin', 'Pastry', 12, 3.6, '2023-06-01'); 
 
-select * from products;
+select * from PRODUCTS;
