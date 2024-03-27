@@ -2,10 +2,7 @@
 
 -- use the RETAIL_ANALYSIS schema in the BAKERY_DB database (see Chapter 8)
 use role SYSADMIN;
-create warehouse if not exists BAKERY_WH with warehouse_size = 'XSMALL';
-create database if not exists BAKERY_DB;
 use database BAKERY_DB;
-create schema if not exists RETAIL_ANALYSIS;
 use schema RETAIL_ANALYSIS;
 
 -- you must have the RETAILER_SALES table (see Chapter 8)
@@ -77,6 +74,7 @@ use warehouse BAKERY_WH_LARGE;
 use warehouse BAKERY_WH_XSMALL;
 
 -- add filter to the previous query (Listing 9.1) to select only stores that within 1000 km
+-- Listing 9.2
 select 
   store_id, 
   distance_km, 
@@ -100,10 +98,15 @@ order by distance_km;
 -- open the query profile after executing
 -- examine the Bytes spilled to local storage statistic - it should be less than before adding the filter
 
+-- set the session parameter to its original value that allows reusing query results
+alter session set use_cached_result = TRUE;
+
+
 -- count the number of records
 select count(*) from RETAILER_SALES;
 -- open the query profile after executing
 -- note that it is a metadata operation
+
 
 -- change the AUTO_SUSPEND parameter to 5 minutes (300 seconds)
 alter warehouse BAKERY_WH_XSMALL set AUTO_SUSPEND = 300;

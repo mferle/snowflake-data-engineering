@@ -11,3 +11,4 @@ Snowflake Data Engineering in Action
 ## Chapter 8: Optimizing Query Performance
 ## Chapter 9: Controlling Cost
 ## Chapter 10: Designing Data Pipelines
+## Chapter 11: Ingesting Data Incrementally
