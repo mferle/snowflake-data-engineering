@@ -1,7 +1,7 @@
-use role ACCOUNTADMIN;
 -- create a storage integration object named PARK_INN_INTEGRATION as described in Chapter 4 
 -- if you created the storage integration already in Chapter 4, no need to recreate it
 -- grant usage on the storage integration object to the DATA_ENGINEER role
+use role ACCOUNTADMIN;
 grant usage on integration PARK_INN_INTEGRATION to role DATA_ENGINEER;
 
 -- use the DATA_ENGINEER role going forward
@@ -23,7 +23,7 @@ create table JSON_ORDERS_EXT (
   load_ts timestamp
 );
 
--- load data from the stage into the extract table
+-- cop< data from the stage into the extract table
 copy into JSON_ORDERS_EXT
 from (
   select 
