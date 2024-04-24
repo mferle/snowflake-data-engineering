@@ -21,7 +21,7 @@ select * from PARTNERS_STREAM;
 
 -- consume the stream by inserting into the target table
 insert into DWH.PARTNERS_TBL
-select product_id, product_name, category, min_quantity, price, valid_from
+select partner_id, partner_name, address, rating, valid_from
 from PARTNERS_STREAM
 where METADATA$ACTION = 'INSERT';
 
