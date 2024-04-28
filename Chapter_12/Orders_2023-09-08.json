@@ -1,0 +1,27 @@
+{
+	"Customer": "Park Inn",
+	"Order date": "2023-09-08",
+	"Orders": [
+		{
+			"Delivery date": "2023-09-12",
+			"Orders by day": [
+				{
+					"Baked good type": "Blueberry Muffin",
+					"Quantity": 6
+				},
+				{
+					"Baked good type": "Whole Wheat Loaf",
+					"Quantity": 2
+				},
+				{
+					"Baked good type": "White Loaf",
+					"Quantity": 4
+				},
+				{
+					"Baked good type": "Croissant",
+					"Quantity": 16
+				}
+			]
+		}
+	]
+}

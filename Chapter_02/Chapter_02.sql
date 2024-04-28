@@ -162,7 +162,7 @@ begin
     group by all;
 end;
 
--- grant EXECUTE TASK privilege to user who will be executing the task
+-- grant EXECUTE TASK privilege to the user who will be executing the task
 use role accountadmin;
 grant execute task on account to role sysadmin;
 use role sysadmin;
