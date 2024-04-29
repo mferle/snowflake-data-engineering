@@ -32,7 +32,6 @@ select * from PARTNERS_STREAM;
 select * from DWH.PARTNERS_TBL;
 
 -- create a view in the data warehouse layer that calculates the end timestamp of the validity interval
--- create a view in the data warehouse layer that calculates the end timestamp of the validity interval
 create view DWH.PARTNERS_VALID_TS as
 select 
   partner_id, 
