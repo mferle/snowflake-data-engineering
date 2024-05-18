@@ -15,7 +15,7 @@ connection_parameters_dict = {
     "role": "SYSADMIN",
     "warehouse": "BAKERY_WH",
     "database": "BAKERY_DB",
-    "schema": "SNOWPARK",
+    "schema": "SNOWPARK"
 }  
 
 # create the session

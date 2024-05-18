@@ -87,18 +87,18 @@ as
       :SQLROWCOUNT;
   end;
 
--- recreate the INSERT_PRODUCTS_TASK and insert data into the logging table
-create or replace task INSERT_PRODUCTS_TASK
+-- recreate the INSERT_PRODUCT_TASK and insert data into the logging table
+create or replace task INSERT_PRODUCT_TASK
   warehouse = BAKERY_WH
   after PIPELINE_START_TASK
 when
-  system$stream_has_data('STG.PRODUCTS_STREAM')
+  system$stream_has_data('STG.PRODUCT_STREAM')
 as
   begin
-    insert into DWH.PRODUCTS_TBL
+    insert into DWH.PRODUCT_TBL
     select product_id, product_name, category, 
       min_quantity, price, valid_from
-    from STG.PRODUCTS_STREAM
+    from STG.PRODUCT_STREAM
     where METADATA$ACTION = 'INSERT';
 
     insert into PIPELINE_LOG
@@ -110,17 +110,17 @@ as
       :SQLROWCOUNT;
   end;
   
--- recreate the INSERT_PARTNERS_TASK and insert data into the logging table
-create or replace task INSERT_PARTNERS_TASK
+-- recreate the INSERT_PARTNER_TASK and insert data into the logging table
+create or replace task INSERT_PARTNER_TASK
   warehouse = BAKERY_WH
   after PIPELINE_START_TASK
 when
-  system$stream_has_data('STG.PARTNERS_STREAM')
+  system$stream_has_data('STG.PARTNER_STREAM')
 as
   begin
-    insert into DWH.PARTNERS_TBL
+    insert into DWH.PARTNER_TBL
     select partner_id, partner_name, address, rating, valid_from
-    from STG.PARTNERS_STREAM
+    from STG.PARTNER_STREAM
     where METADATA$ACTION = 'INSERT';
 
     insert into PIPELINE_LOG
@@ -157,24 +157,24 @@ as
       'firstname.lastname@youremail.com',    
       'Daily pipeline end',
       'The daily pipeline finished at ' || current_timestamp || '.' ||
-        '\n\n' || :return_messageDie1P
+        '\n\n' || :return_message
 
     );
   end;
 
 -- add data to the sources
 -- upload the Orders_2023-09-08.json file to the cloud storage location
--- insert partners data
-insert into STG.PARTNERS values(
+-- insert partner data
+insert into STG.PARTNER values(
   113, 'Lazy Brunch', '1012 Astoria Avenue', 'A', '2023-09-01'
 );
--- update products data
-update STG.PRODUCTS set min_quantity = 5 where product_id = 5;
+-- update product data
+update STG.PRODUCT set min_quantity = 5 where product_id = 5;
 
 -- resume all tasks
 alter task PIPELINE_END_TASK resume;
-alter task INSERT_PRODUCTS_TASK resume;
-alter task INSERT_PARTNERS_TASK resume;
+alter task INSERT_PRODUCT_TASK resume;
+alter task INSERT_PARTNER_TASK resume;
 alter task INSERT_ORDERS_STG_TASK resume;
 alter task COPY_ORDERS_TASK resume;
 alter task PIPELINE_START_TASK resume;

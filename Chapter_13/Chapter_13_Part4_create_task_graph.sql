@@ -15,29 +15,29 @@ as
     'The daily pipeline started at ' || current_timestamp || '.'
 );
 
--- create a task that inserts the products data from the stream to the target table
-create or replace task INSERT_PRODUCTS_TASK
+-- create a task that inserts the product data from the stream to the target table
+create or replace task INSERT_PRODUCT_TASK
   warehouse = BAKERY_WH
   after PIPELINE_START_TASK
 when
-  system$stream_has_data('STG.PRODUCTS_STREAM')
+  system$stream_has_data('STG.PRODUCT_STREAM')
 as
-  insert into DWH.PRODUCTS_TBL
+  insert into DWH.PRODUCT_TBL
   select product_id, product_name, category, 
     min_quantity, price, valid_from
-  from STG.PRODUCTS_STREAM
+  from STG.PRODUCT_STREAM
   where METADATA$ACTION = 'INSERT';
 
--- create a task that inserts the partners data from the stream to the target table
-create or replace task INSERT_PARTNERS_TASK
+-- create a task that inserts the partner data from the stream to the target table
+create or replace task INSERT_PARTNER_TASK
   warehouse = BAKERY_WH
   after PIPELINE_START_TASK
 when
-  system$stream_has_data('STG.PARTNERS_STREAM')
+  system$stream_has_data('STG.PARTNER_STREAM')
 as
-  insert into DWH.PARTNERS_TBL
+  insert into DWH.PARTNER_TBL
   select partner_id, partner_name, address, rating, valid_from
-  from PARTNERS_STREAM
+  from PARTNER_STREAM
   where METADATA$ACTION = 'INSERT';
 
 -- create the finalizer task
@@ -60,8 +60,8 @@ alter task COPY_ORDERS_TASK
 
 -- resume all tasks
 alter task PIPELINE_END_TASK resume;
-alter task INSERT_PRODUCTS_TASK resume;
-alter task INSERT_PARTNERS_TASK resume;
+alter task INSERT_PRODUCT_TASK resume;
+alter task INSERT_PARTNER_TASK resume;
 alter task INSERT_ORDERS_STG_TASK resume;
 alter task COPY_ORDERS_TASK resume;
 alter task PIPELINE_START_TASK resume;

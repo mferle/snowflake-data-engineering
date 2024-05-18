@@ -11,6 +11,7 @@ use database BAKERY_DB;
 use schema EXT;
 
 -- create an external stage named JSON_ORDERS_STAGE using the PARK_INN_INTEGRATION as described in Chapter 4
+-- be sure to create the external stage with the JSON file format, eg. file_format = (type = json)
 -- upload the json files Orders_2023-09-01.json and Orders_2023-09-04.json to the object storage location used in the stage
 
 -- view files in the stage
@@ -23,7 +24,7 @@ create table JSON_ORDERS_EXT (
   load_ts timestamp
 );
 
--- cop< data from the stage into the extract table
+-- copy data from the stage into the extract table
 copy into JSON_ORDERS_EXT
 from (
   select 
@@ -36,3 +37,4 @@ on_error = abort_statement
 ;
 
 select * from JSON_ORDERS_EXT;
+-- output should show two rows, one for each file you uploaded

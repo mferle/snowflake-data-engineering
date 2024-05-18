@@ -4,10 +4,8 @@ create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 
 -- create schemas with managed access
-create schema EXT with managed access;
-create schema STG with managed access;
-create schema DWH with managed access;
-create schema MGMT with managed access;
+create schema RAW with managed access;
+create schema RPT with managed access;
 
 -- using the USERADMIN role (because this role has the CREATE ROLE privilege)
 use role USERADMIN;
@@ -28,20 +26,18 @@ use role SECURITYADMIN;
 -- grant full privileges on database BAKERY_DB to the BAKERY_FULL role
 grant usage on database BAKERY_DB to role BAKERY_FULL;
 grant usage on all schemas in database BAKERY_DB to role BAKERY_FULL;
-grant all on schema BAKERY_DB.EXT to role BAKERY_FULL;
-grant all on schema BAKERY_DB.STG to role BAKERY_FULL;
-grant all on schema BAKERY_DB.DWH to role BAKERY_FULL;
-grant all on schema BAKERY_DB.MGMT to role BAKERY_FULL;
+grant all on schema BAKERY_DB.RAW to role BAKERY_FULL;
+grant all on schema BAKERY_DB.RPT to role BAKERY_FULL;
 
 -- grant read-only privileges on database BAKERY_DB to the BAKERY_READ role
 grant usage on database BAKERY_DB to role BAKERY_READ;
 grant usage on all schemas in database BAKERY_DB to role BAKERY_READ;
-grant select on all tables in schema BAKERY_DB.MGMT to role BAKERY_READ;
-grant select on all views in schema BAKERY_DB.MGMT to role BAKERY_READ;
+grant select on all tables in schema BAKERY_DB.RPT to role BAKERY_READ;
+grant select on all views in schema BAKERY_DB.RPT to role BAKERY_READ;
 
 -- grant future privileges
-grant select on future tables in schema BAKERY_DB.MGMT to role BAKERY_READ;
-grant select on future views in schema BAKERY_DB.MGMT to role BAKERY_READ;
+grant select on future tables in schema BAKERY_DB.RPT to role BAKERY_READ;
+grant select on future views in schema BAKERY_DB.RPT to role BAKERY_READ;
 
 -- grant access roles to functional roles
 -- grant the BAKERY_FULL role to the DATA_ENGINEER role
@@ -64,28 +60,38 @@ grant role DATA_ANALYST to user IDENTIFIER($my_current_user);
 grant usage on warehouse BAKERY_WH to role DATA_ENGINEER;
 grant usage on warehouse BAKERY_WH to role DATA_ANALYST;
 
--- to test, create a table in the MGMT schema using the DATA_ENGINEER role
--- since the DATA_ENGINEER role has full access, it should be allowed to create the table
--- the table will be owned by SYSADMIN because it is in a managed access schema owned by SYSADMIN
+-- to test, use the DATA_ENGINEER role to create a table in the RAW schema and insert some sample values
 use role DATA_ENGINEER;
 use warehouse BAKERY_WH;
 use database BAKERY_DB;
-use schema MGMT;
-create table TEST_TABLE(id integer);
-insert into TEST_TABLE values(1);
+use schema RAW;
 
--- then switch to the DATA_ANALYST role and select from the test table
--- it should return data because the role was granted select privileges on future tables in the MGMT schema
+create table EMPLOYEE (
+  id integer,
+  name varchar,
+  home_address varchar,
+  department varchar,
+  hire_date date
+);
+
+insert into EMPLOYEE values
+(1001, 'William Jones', '5170 Arcu St.', 'Bread', '2020-02-01'),
+(1002, 'Alexander North', '261 Ipsum Rd.', 'Pastry', '2021-04-01'),
+(1003, 'Jennifer Navarro', '880 Dictum Ave.', 'Pastry', '2019-08-01'),
+(1004, 'Sandra Perkins', '55 Velo St.', 'Bread', '2022-05-01');
+
+-- use the DATA_ANALYST role to select from the table in the RAW schema
 use role DATA_ANALYST;
-use warehouse BAKERY_WH;
-use database BAKERY_DB;
-use schema MGMT;
-select * from TEST_TABLE;
+select * from RAW.EMPLOYEE;
+-- should not succeed because the DATA_ANALYST has no privileges in the RAW schema
 
--- attempt to drop the test table still using the DATA_ANALYST role
-drop table TEST_TABLE; -- does not succeed because the data analyst has only select privileges
-
--- switch to the DATA_ENGINEER role
+-- switch to the DATA_ENGINEER role and create a view in the RPT schema
 use role DATA_ENGINEER;
-drop table TEST_TABLE; -- succeeds because the data engineer has full privileges
+create view RPT.EMPLOYEE as 
+select id, name, home_address, department, hire_date
+from RAW.EMPLOYEE;
 
+-- switch to the DATA_ANALYST role and select from the view in the RPT schema
+use role DATA_ANALYST;
+select * from RPT.EMPLOYEE;
+-- should return values

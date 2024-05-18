@@ -30,7 +30,7 @@ as
 execute task COPY_ORDERS_TASK;
 
 -- view the task history
--- Listing 12.1
+-- Listing 13.1
 select *
   from table(information_schema.task_history())
   order by scheduled_time desc;

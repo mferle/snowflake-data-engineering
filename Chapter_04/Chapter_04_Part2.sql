@@ -20,7 +20,8 @@ from bakery_db.external_json_orders.ORDERS_PARK_INN_STG;
 -- create target table that will store historical orders combined from all sources
 use database BAKERY_DB;
 use schema TRANSFORM;
-use schema TRANSFORM;create or replace table CUSTOMER_ORDERS_COMBINED (
+use schema TRANSFORM;
+create or replace table CUSTOMER_ORDERS_COMBINED (
   customer varchar,
   order_date date,
   delivery_date date,

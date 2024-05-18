@@ -87,11 +87,11 @@ where store_id in (
     select store_id, 
       count(distinct product_id) as product_cnt
     from RETAILER_SALES
+    where distance_km < 1000
     group by store_id
     having product_cnt > 100
   )
 )
-and distance_km < 1000
 group by store_id, distance_km, product_id
 order by distance_km;
 

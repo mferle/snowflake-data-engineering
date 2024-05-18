@@ -7,7 +7,7 @@ use schema MGMT;
 create view ORDERS_SUMMARY as
 select ORD.delivery_date, PRD.product_name, PRD.category, sum(ORD.quantity) as total_quantity
 from dwh.ORDERS ORD
-left join dwh.PRODUCTS PRD
+left join dwh.PRODUCT PRD
 on ORD.product_id = PRD.product_id
 group by all;
 

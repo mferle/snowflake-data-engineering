@@ -10,8 +10,9 @@ Snowflake Data Engineering in Action
 ## Chapter 7: Augmenting Data with Outputs from Large Language Models
 ## Chapter 8: Optimizing Query Performance
 ## Chapter 9: Controlling Cost
-## Chapter 10: Designing Data Pipelines
-## Chapter 11: Ingesting Data Incrementally
-## Chapter 12: Orchestrating Data Pipelines
-## Chapter 13: Testing for Data Completeness
-## Chapter 14: Data Pipeline Continuous Integration
+## Chapter 10: Data Governance and Access Control
+## Chapter 11: Designing Data Pipelines
+## Chapter 12: Ingesting Data Incrementally
+## Chapter 13: Orchestrating Data Pipelines
+## Chapter 14: Testing for Data Integrity and Completeness
+## Chapter 15: Data Pipeline Continuous Integration
