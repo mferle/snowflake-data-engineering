@@ -1,23 +1,24 @@
 use role DATA_ENGINEER;
 use warehouse BAKERY_WH;
 use database BAKERY_DB;
-use schema STG;
+use schema ORCHESTRATION;
 
 -- insert a new partner into the PARTNER staging table
 insert into STG.PARTNER values
 (114, 'Country Market', '12 Meadow Lane', null, '2023-10-10');
 
--- resume the pipeline
-alter task ORCHESTRATION.PIPELINE_START_TASK resume;
+-- insert a new product into the PRODUCT staging table
+insert into STG.PRODUCT values
+(14, 'Banana Muffin', 'Cake', 12, 3.20, '2023-10-10');
 
--- after 10 minutes, you should receive two emails, one when the pipeline started and one when the pipeline completed
--- you can also check the task_history() table function
+-- execute the pipeline manually
+execute task ORCHESTRATION.PIPELINE_START_TASK;
+
+-- check the task_history() table function
 select *
 from table(information_schema.task_history())
 order by scheduled_time desc;
-
--- suspend the pipeline
-alter task ORCHESTRATION.PIPELINE_START_TASK resume;
+-- you should also receive two emails, one when the pipeline started and one when the pipeline completed
 
 -- create DQ schema
 -- refer to Chapter_10_Part1_role_based_access_control.sql
@@ -41,21 +42,39 @@ create or replace table DQ_LOG (
   task_name varchar, --CURRENT_TASK_NAME
   log_ts timestamp,
   database_name varchar,
-  table_name varchar,
   schema_name varchar,
+  table_name varchar,
   dq_rule_name varchar,
-  error_cnt number
+  error_cnt number,
+  error_info varchar
 );
 
--- create the PARTNER_DQ_TASK
-create or replace task ORCHESTRATION.PARTNER_DQ_TASK
+-- go back to the ORCHESTRATION schema to work on the tasks
+use schema ORCHESTRATION;
+
+-- select rows where the rating is null
+select * from DWH.PARTNER_TBL where rating is null;
+
+-- select an array of partner ids of all rows where the rating is null
+--Listing 14.1.
+select array_agg(PARTNER_ID) from DWH.PARTNER_TBL where rating is null;
+
+-- create a PARTNER_DQ_TASK
+-- schedule it every 10 minutes initially so you can execute it manually to test
+create or replace task PARTNER_DQ_TASK
   warehouse = BAKERY_WH
   schedule = '10 M'
 as
   declare
+    error_info variant;
     error_cnt integer;
   begin
-    error_cnt := (select count(*) from BAKERY_DB.DWH.PARTNER_TBL where rating is null);
+    select array_agg(PARTNER_ID) into error_info
+    from DWH.PARTNER_TBL 
+    where rating is null;
+
+    error_cnt := array_size(error_info);
+
     if (error_cnt > 0) then
       insert into DQ.DQ_LOG
       select
@@ -67,12 +86,13 @@ as
         'DWH',
         'PARTNER_TBL',
         'Null values in the RATING column',
-        :error_cnt;
+        :error_cnt,
+        :error_info;
     end if;
   end;
 
 -- execute the task manually to test
-execute task ORCHESTRATION.PARTNER_DQ_TASK;
+execute task PARTNER_DQ_TASK;
 
 -- check the task history
 select *
@@ -83,6 +103,10 @@ order by scheduled_time desc;
 select * from DQ.DQ_LOG;
 
 -- unset the schedule from the task and make it dependent on the INSERT_PARTNER_TASK
-alter task ORCHESTRATION.PARTNER_DQ_TASK unset schedule;
-alter task ORCHESTRATION.PARTNER_DQ_TASK 
-  add after ORCHESTRATION.INSERT_PARTNER_TASK;
+alter task PARTNER_DQ_TASK unset schedule;
+alter task PARTNER_DQ_TASK 
+  add after INSERT_PARTNER_TASK;
+
+-- resume the task so it will run in the pipeline
+alter task PARTNER_DQ_TASK resume;
+
