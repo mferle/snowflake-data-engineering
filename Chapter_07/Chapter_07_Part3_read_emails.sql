@@ -1,54 +1,34 @@
--- create a new schema in the BAKERY_DB database (see Chapter 2)
+--python -m pip install snowflake-ml-python
 use role SYSADMIN;
 use database BAKERY_DB;
 use schema REVIEWS;
 
--- create a stored procedure that calls the API endpoint using the external access integration and the secret
+-- create a stored procedure that calls the Snowflake Cortex Complete model
 -- it then converts the resulting CSV output into a data frame and saves it to a table
---Listing 7.8 
 create or replace procedure READ_EMAIL_PROC(email_content varchar)
 returns table()
 language python
 runtime_version = 3.10
 handler = 'get_order_info_from_email'
-external_access_integrations = (OPENAI_API_INTEGRATION)
-secrets = ('openai_api_token' = OPENAI_API_TOKEN)
-packages = ('requests', 'snowflake-snowpark-python')
+packages = ('snowflake-snowpark-python', 'snowflake-ml-python')
 AS
 $$
 import _snowflake
-import requests
 import snowflake.snowpark as snowpark
 from snowflake.snowpark.types import StructType, StructField, DateType, StringType, IntegerType
+from snowflake.cortex import Complete
 
-#Listing 7.10 
 def get_order_info_from_email(session: snowpark.Session, email_content):
 
-  api_key = _snowflake.get_generic_secret_string('openai_api_token')
+  prompt = f"""You are a bakery employee, reading customer emails asking for deliveries. \
+    Please read the email at the end of this text and extract information about the ordered items.  \
+    Format the information in CSV using the following columns: customer, order_date, delivery_date, item, and quantity. \
+    Format the date as YYYY-MM-DD. If no year is given, assume the current year. \
+    Use the current date in the format YYYY-MM-DD for the order date.  \
+    Items should be in this list: [white loaf, rye loaf, baguette, bagel, croissant, chocolate muffin, blueberry muffin].  \
+    The content of the email follows this line. \n {email_content}"""
 
-#Listing 7.11
-  url = 'https://api.openai.com/v1/chat/completions'
-
-#Listing 7.12
-  prompt = 'You are a bakery employee, reading customer emails asking for deliveries. \
-Please read the email at the end of this text and extract information about the ordered items.  \
-Format the information in CSV using the following columns: customer, order_date, delivery_date, item, and quantity. \
-Format the date as YYYY-MM-DD. If no year is given, assume the current year. \
-Use the current date in the format YYYY-MM-DD for the order date.  \
-Items should be in this list: [white loaf, rye loaf, baguette, bagel, croissant, chocolate muffin, blueberry muffin].  \
-The content of the email follows this line. ' + email_content
-
-  data = '{"model": "gpt-3.5-turbo", \
-    "messages": [{"role": "user", "content": "' + prompt + '"}], \
-    "temperature": 0.3}'
-
-  response = requests.post(
-    url = url, 
-    headers = {'Authorization': 'Bearer ' + api_key, 
-    'Content-Type': 'application/json'}, 
-    data = data)
-
-  csv_output = response.json()["choices"][0]["message"]["content"]
+  csv_output = Complete('snowflake-arctic', prompt)
   
   schema = StructType([ 
         StructField("CUSTOMER", StringType(), False),  
