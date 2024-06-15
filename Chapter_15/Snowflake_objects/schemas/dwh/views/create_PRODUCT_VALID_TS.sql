@@ -1,5 +1,5 @@
 -- create a view in the data warehouse layer that calculates the end timestamp of the validity interval
-create view DWH.PRODUCT_VALID_TS as
+create or replace view DWH.PRODUCT_VALID_TS as
 select 
   product_id, 
   product_name, 
