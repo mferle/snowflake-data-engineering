@@ -14,6 +14,7 @@ execute immediate from '../Snowflake_objects/schemas/stg/streams/create_PRODUCT_
 -- DWH schema
 execute immediate from '../Snowflake_objects/schemas/dwh/tables/create_PARTNER_TBL.sql';
 execute immediate from '../Snowflake_objects/schemas/dwh/tables/create_PRODUCT_TBL.sql';
+execute immediate from '../Snowflake_objects/schemas/dwh/views/create_PRODUCT_VALID_TS.sql';
 execute immediate from '../Snowflake_objects/schemas/dwh/dynamic_tables/create_ORDERS_TBL.sql';
 
 -- MGMT schema
