@@ -1,25 +1,24 @@
 use role SYSADMIN;
 create warehouse if not exists BAKERY_WH with warehouse_size = 'XSMALL';
-use warehouse BAKERY_WH;
 create database if not exists BAKERY_DB;
 use database BAKERY_DB;
 
 -- create schema with managed access using the SYSADMIN role
-create schema EXT with managed access;
-create schema STG with managed access;
-create schema DWH with managed access;
-create schema MGMT with managed access;
+create or replace schema EXT with managed access;
+create or replace schema STG with managed access;
+create or replace schema DWH with managed access;
+create or replace schema MGMT with managed access;
 
--- using the USERADMIN role (because this role has the CREATE ROLE privilege)
+-- using the USERADMIN role (because this role has the create or replace role privilege)
 use role USERADMIN;
 
 -- create the access roles for full access and for read-only access
-create role BAKERY_FULL;
-create role BAKERY_READ;
+create or replace role BAKERY_FULL;
+create or replace role BAKERY_READ;
 
 -- create the functional roles
-create role DATA_ENGINEER;
-create role DATA_ANALYST;
+create or replace role DATA_ENGINEER;
+create or replace role DATA_ANALYST;
 
 -- using the SECURITYADMIN role (because this role has the MANAGE GRANTS privilege)
 use role SECURITYADMIN;
