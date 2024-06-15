@@ -1,63 +1,9 @@
--- -----------------------------------------------------------------------------------------
--- EXT layer
--- -----------------------------------------------------------------------------------------
-
--- create a storage integration object named PARK_INN_INTEGRATION as described in Chapter 4 
--- if you created the storage integration already in Chapter 4, no need to recreate it
--- grant usage on the storage integration object to the DATA_ENGINEER role
---use role ACCOUNTADMIN;
---grant usage on integration PARK_INN_INTEGRATION to role DATA_ENGINEER;
-
--- use the DATA_ENGINEER role going forward
 use role DATA_ENGINEER;
 use warehouse BAKERY_WH;
 use database BAKERY_DB;
-use schema EXT;
-
--- create an external stage named JSON_ORDERS_STAGE using the PARK_INN_INTEGRATION as described in Chapter 4
--- be sure to create the external stage with the JSON file format, eg. file_format = (type = json)
-
--- quick and dirty if you don't have the storage integration object: create an internal stage
-create stage JSON_ORDERS_STAGE file_format = (type = json);
-
--- upload the json files Orders_2023-09-01.json and Orders_2023-09-04.json to the object storage location used in the stage
-
--- create the extract table for the orders in raw (json) format
-create table JSON_ORDERS_EXT (
-  customer_orders variant,
-  source_file_name varchar,
-  load_ts timestamp
-);
-
--- create a stream on the table
-create stream JSON_ORDERS_STREAM 
-on table JSON_ORDERS_EXT;
-
--- -----------------------------------------------------------------------------------------
--- STG layer
--- -----------------------------------------------------------------------------------------
-
 use schema STG;
 
--- create a staging table in the STG schema that will store the flattened semi-structured data from the extraction layer
-create table STG.JSON_ORDERS_TBL_STG (
-  customer varchar,
-  order_date date,
-  delivery_date date,
-  baked_good_type varchar,
-  quantity number,
-  source_file_name varchar,
-  load_ts timestamp
-);
-
 -- create tables in the STG schema, simulating tables populated from the source system using a data integration tool or custom solution
-create table PARTNER (
-partner_id integer,
-partner_name varchar,
-address varchar,
-rating varchar,
-valid_from date
-);
 
 insert into PARTNER values
 (101, 'Coffee Pocket', '501 Courtney Wells', 'A', '2023-06-01'),
@@ -73,8 +19,6 @@ insert into PARTNER values
 (111, 'Farm Fresh', '23633 Melanie Ranch', 'A', '2023-06-01'),
 (112, 'Murphy Mill', '700 Darren Centers', 'A', '2023-06-01');
 
--- create a stream on the table in the staging layer
-create stream PRODUCT_STREAM on table PRODUCT;
 
 create table PRODUCT (
 product_id integer,
