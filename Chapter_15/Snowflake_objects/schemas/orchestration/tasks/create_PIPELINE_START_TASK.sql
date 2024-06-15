@@ -1,8 +1,7 @@
 --!jinja2
-use database {{curr_db_name}};
 
 -- create the root task
-create or replace task ORCHESTRATION.PIPELINE_START_TASK
+create or replace task {{curr_db_name}}.ORCHESTRATION.PIPELINE_START_TASK
   warehouse = BAKERY_WH
   schedule = '10 M'
 as

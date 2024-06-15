@@ -1,9 +1,9 @@
-use database {{curr_db_name}};
+--!jinja2
 
 -- create a task that inserts the partner data from the stream to the target table
-create or replace task ORCHESTRATION.INSERT_PARTNER_TASK
+create or replace task {{curr_db_name}}.ORCHESTRATION.INSERT_PARTNER_TASK
   warehouse = BAKERY_WH
-  after ORCHESTRATION.PIPELINE_START_TASK
+  after {{curr_db_name}}.ORCHESTRATION.PIPELINE_START_TASK
 when
   system$stream_has_data('STG.PARTNER_STREAM')
 as
