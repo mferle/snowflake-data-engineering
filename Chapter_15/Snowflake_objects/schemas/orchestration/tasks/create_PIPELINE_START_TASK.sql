@@ -1,3 +1,5 @@
+use database {{curr_db_name}};
+
 -- create the root task
 create or replace task ORCHESTRATION.PIPELINE_START_TASK
   warehouse = BAKERY_WH
