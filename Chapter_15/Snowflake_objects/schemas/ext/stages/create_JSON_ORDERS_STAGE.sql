@@ -1,5 +1,3 @@
---!jinja2
-
 -- create an external stage named JSON_ORDERS_STAGE using the PARK_INN_INTEGRATION as described in Chapter 4
 -- be sure to create the external stage with the JSON file format, eg. file_format = (type = json)
 

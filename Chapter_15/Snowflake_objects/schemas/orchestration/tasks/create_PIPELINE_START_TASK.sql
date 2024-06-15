@@ -1,3 +1,4 @@
+--!jinja2
 use database {{curr_db_name}};
 
 -- create the root task

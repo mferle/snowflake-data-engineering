@@ -1,3 +1,5 @@
+--!jinja2
+
 use database {{curr_db_name}};
 -- EXT schema
 execute immediate from '../Snowflake_objects/schemas/ext/stages/create_JSON_ORDERS_STAGE.sql';
