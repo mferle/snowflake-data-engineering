@@ -79,7 +79,7 @@ use role ACCOUNTADMIN;
 grant execute task on account to role DATA_ENGINEER;
 
 -- create a notification integration for sending emails
-create notification integration PIPELINE_EMAIL_INT
+create or replace notification integration PIPELINE_EMAIL_INT
   type = email
   enabled = true;
 
