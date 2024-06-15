@@ -11,4 +11,4 @@ execute immediate from '../Snowflake_objects/databases/bakery_db/schemas/ext/str
 
 
 -- snow sql -q "alter git repository ADMIN_DB.GIT_INTEGRATION.SF_DE_IA fetch"
--- snow sql -q "execute immediate from @SF_DE_IA/branches/wip/Chapter_15/Snowflake_objects/deploy_objects.sql using (curr_db_name => 'BAKERY_DB')"
+-- snow sql --database ADMIN_DB --schema GIT_INTEGRATION -q "execute immediate from @SF_DE_IA/branches/wip/Chapter_15/Snowflake_objects/deploy_objects.sql using (curr_db_name => 'BAKERY_DB') using (curr_db_name => 'BAKERY_DB')"
