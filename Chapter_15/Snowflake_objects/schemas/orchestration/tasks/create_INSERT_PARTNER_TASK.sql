@@ -1,3 +1,5 @@
+use database {{curr_db_name}};
+
 -- create a task that inserts the partner data from the stream to the target table
 create or replace task ORCHESTRATION.INSERT_PARTNER_TASK
   warehouse = BAKERY_WH

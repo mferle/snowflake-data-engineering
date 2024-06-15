@@ -1,3 +1,5 @@
+use database {{curr_db_name}};
+
 -- create a task that inserts data from the stream into the staging table
 create or replace task ORCHESTRATION.INSERT_ORDERS_STG_TASK
   warehouse = 'BAKERY_WH'

@@ -1,3 +1,5 @@
+use database {{curr_db_name}};
+
 -- create the finalizer task
 create or replace task ORCHESTRATION.PIPELINE_END_TASK
   warehouse = BAKERY_WH

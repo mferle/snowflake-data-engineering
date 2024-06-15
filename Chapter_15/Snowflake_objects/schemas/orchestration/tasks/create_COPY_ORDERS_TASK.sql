@@ -1,3 +1,5 @@
+use database {{curr_db_name}};
+
 -- create a task that performs the COPY INTO operation from the stage into the table
 create or replace task ORCHESTRATION.COPY_ORDERS_TASK
   warehouse = BAKERY_WH
