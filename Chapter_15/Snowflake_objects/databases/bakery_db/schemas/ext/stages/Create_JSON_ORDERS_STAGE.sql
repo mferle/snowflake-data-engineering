@@ -2,4 +2,5 @@
 -- be sure to create the external stage with the JSON file format, eg. file_format = (type = json)
 
 -- quick and dirty if you don't have the storage integration object: create an internal stage
+use database bakery_db;
 create or replace stage EXT.JSON_ORDERS_STAGE file_format = (type = json);
