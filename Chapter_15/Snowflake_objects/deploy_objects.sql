@@ -1,7 +1,7 @@
 -- EXT schema
-execute immediate from '../databases/bakery_db/schemas/ext/stages/Create_JSON_ORDERS_STAGE.sql';
-execute immediate from '../databases/bakery_db/schemas/ext/tables/Create_JSON_ORDERS_EXT.sql';
-execute immediate from '../databases/bakery_db/schemas/ext/streams/Create_JSON_ORDERS_STREAM.sql';
+execute immediate from '../Snowflake_objects/databases/bakery_db/schemas/ext/stages/Create_JSON_ORDERS_STAGE.sql';
+execute immediate from '../Snowflake_objects/databases/bakery_db/schemas/ext/tables/Create_JSON_ORDERS_EXT.sql';
+execute immediate from '../Snowflake_objects/databases/bakery_db/schemas/ext/streams/Create_JSON_ORDERS_STREAM.sql';
 -- STG schema
 
 
