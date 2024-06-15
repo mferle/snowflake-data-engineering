@@ -8,6 +8,7 @@ create or replace schema EXT with managed access;
 create or replace schema STG with managed access;
 create or replace schema DWH with managed access;
 create or replace schema MGMT with managed access;
+create or replace schema ORCHESTRATION with managed access;
 
 -- using the USERADMIN role (because this role has the create or replace role privilege)
 use role USERADMIN;
@@ -32,6 +33,7 @@ grant all on schema BAKERY_DB.EXT to role BAKERY_FULL;
 grant all on schema BAKERY_DB.STG to role BAKERY_FULL;
 grant all on schema BAKERY_DB.DWH to role BAKERY_FULL;
 grant all on schema BAKERY_DB.MGMT to role BAKERY_FULL;
+grant all on schema BAKERY_DB.ORCHESTRATION to role BAKERY_FULL;
 
 -- grant read-only privileges on database BAKERY_DB to the BAKERY_READ role
 grant usage on database BAKERY_DB to role BAKERY_READ;
@@ -71,3 +73,15 @@ grant usage on database ADMIN_DB to role DATA_ENGINEER;
 grant usage on schema ADMIN_DB.GIT_INTEGRATION to role DATA_ENGINEER;
 grant read on git repository ADMIN_DB.GIT_INTEGRATION.SF_DE_IA to role DATA_ENGINEER;
 grant write on git repository ADMIN_DB.GIT_INTEGRATION.SF_DE_IA to role DATA_ENGINEER;
+
+-- grant the DATA_ENGINEER role the privilege to execute tasks
+use role ACCOUNTADMIN;
+grant execute task on account to role DATA_ENGINEER;
+
+-- create a notification integration for sending emails
+create notification integration PIPELINE_EMAIL_INT
+  type = email
+  enabled = true;
+
+-- grant usage on the integration to the DATA_ENGINEER role
+grant usage on integration PIPELINE_EMAIL_INT to role DATA_ENGINEER;
