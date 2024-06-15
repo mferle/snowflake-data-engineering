@@ -3,7 +3,7 @@ use database {{curr_db_name}};
 -- create a task that inserts data from the stream into the staging table
 create or replace task ORCHESTRATION.INSERT_ORDERS_STG_TASK
   warehouse = 'BAKERY_WH'
-  after COPY_ORDERS_TASK
+  after ORCHESTRATION.COPY_ORDERS_TASK
 when
   system$stream_has_data('EXT.JSON_ORDERS_STREAM')
 as

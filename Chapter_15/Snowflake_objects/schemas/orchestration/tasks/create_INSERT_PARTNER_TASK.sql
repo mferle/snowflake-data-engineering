@@ -3,7 +3,7 @@ use database {{curr_db_name}};
 -- create a task that inserts the partner data from the stream to the target table
 create or replace task ORCHESTRATION.INSERT_PARTNER_TASK
   warehouse = BAKERY_WH
-  after PIPELINE_START_TASK
+  after ORCHESTRATION.PIPELINE_START_TASK
 when
   system$stream_has_data('STG.PARTNER_STREAM')
 as
