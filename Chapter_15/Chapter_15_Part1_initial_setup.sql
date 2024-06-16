@@ -5,8 +5,8 @@ create schema GIT_INTEGRATION;
 -- create the git secret
 create or replace secret GIT_SECRET
   type = password
-  username = mferle --<your Git username>
-  password = "9cycJ4dtkAczaM7Q" --<your password>
+  username = <your Git username>
+  password = <your password>
 ;
 
 -- use the ACCOUNTADMIN role to create an API integration to keep the exercise simple
