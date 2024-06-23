@@ -29,7 +29,8 @@ use role SYSADMIN;
 create or replace git repository SF_DE_IA
   api_integration = GIT_API_INTEGRATION
   git_credentials = GIT_SECRET
-  ORIGIN = 'https://github.com/mferle/SF_DE_IA.git';
+-- substitute the URL to your repository on the next line
+  ORIGIN = 'https://github.com/mferle/SF_DE_IA.git'; 
 
 -- fetch the latest from the Git repository
 alter git repository SF_DE_IA fetch;

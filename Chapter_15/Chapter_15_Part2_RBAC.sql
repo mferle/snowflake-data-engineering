@@ -56,12 +56,6 @@ grant role BAKERY_READ to role DATA_ANALYST;
 grant role DATA_ENGINEER to role SYSADMIN;
 grant role DATA_ANALYST to role SYSADMIN;
 
--- grant the functional roles to the users who perform those business functions
--- in this exercise we grant both functional roles to our current user to be able to test them
-
-grant role DATA_ENGINEER to user <your username>;
-grant role DATA_ANALYST to user <your username>;
-
 -- grant usage on the BAKERY_WH warehouse to the functional roles
 grant usage on warehouse BAKERY_WH to role DATA_ENGINEER;
 grant usage on warehouse BAKERY_WH to role DATA_ANALYST;
