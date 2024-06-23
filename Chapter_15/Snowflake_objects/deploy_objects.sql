@@ -1,6 +1,6 @@
 --!jinja2
 
-use database {{curr_db_name}};
+use database BAKERY_DB;
 -- EXT schema
 execute immediate from '../Snowflake_objects/schemas/ext/stages/create_JSON_ORDERS_STAGE.sql';
 execute immediate from '../Snowflake_objects/schemas/ext/tables/create_JSON_ORDERS_EXT.sql';
@@ -23,12 +23,12 @@ execute immediate from '../Snowflake_objects/schemas/dwh/dynamic_tables/create_O
 execute immediate from '../Snowflake_objects/schemas/mgmt/dynamic_tables/create_ORDERS_SUMMARY_TBL.sql';
 
 -- ORCHESTRATION schema
-execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_PIPELINE_START_TASK.sql' using (curr_db_name => '{{curr_db_name}}');
-execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_COPY_ORDERS_TASK.sql' using (curr_db_name => '{{curr_db_name}}');
-execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_INSERT_ORDERS_STG_TASK.sql' using (curr_db_name => '{{curr_db_name}}');
-execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_INSERT_PARTNER_TASK.sql' using (curr_db_name => '{{curr_db_name}}');
-execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_INSERT_PRODUCT_TASK.sql' using (curr_db_name => '{{curr_db_name}}');
+execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_PIPELINE_START_TASK.sql';
+execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_COPY_ORDERS_TASK.sql';
+execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_INSERT_ORDERS_STG_TASK.sql';
+execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_INSERT_PARTNER_TASK.sql';
+execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_INSERT_PRODUCT_TASK.sql';
 
 
 -- snow sql -q "alter git repository ADMIN_DB.GIT_INTEGRATION.SF_DE_IA fetch"
--- snow sql --database ADMIN_DB --schema GIT_INTEGRATION -q "execute immediate from @SF_DE_IA/branches/wip/Chapter_15/Snowflake_objects/deploy_objects.sql using (curr_db_name => 'BAKERY_DB')"
+-- snow sql --database ADMIN_DB --schema GIT_INTEGRATION -q "execute immediate from @SF_DE_IA/branches/wip/Chapter_15/Snowflake_objects/deploy_objects.sql
