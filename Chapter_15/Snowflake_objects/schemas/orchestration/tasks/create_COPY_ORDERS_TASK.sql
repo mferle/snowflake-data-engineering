@@ -1,5 +1,3 @@
---!jinja2
-
 -- create a task that performs the COPY INTO operation from the stage into the table
 create or replace task BAKERY_DB.ORCHESTRATION.COPY_ORDERS_TASK
   warehouse = BAKERY_WH

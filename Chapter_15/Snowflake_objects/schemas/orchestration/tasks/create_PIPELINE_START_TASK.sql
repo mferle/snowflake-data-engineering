@@ -1,5 +1,3 @@
---!jinja2
-
 -- create the root task
 create or replace task BAKERY_DB.ORCHESTRATION.PIPELINE_START_TASK
   warehouse = BAKERY_WH

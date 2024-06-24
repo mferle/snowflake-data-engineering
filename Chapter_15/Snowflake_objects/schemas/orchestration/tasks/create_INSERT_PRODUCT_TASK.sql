@@ -1,5 +1,3 @@
---!jinja2
-
 -- create a task that inserts the product data from the stream to the target table
 create or replace task BAKERY_DB.ORCHESTRATION.INSERT_PRODUCT_TASK
   warehouse = BAKERY_WH

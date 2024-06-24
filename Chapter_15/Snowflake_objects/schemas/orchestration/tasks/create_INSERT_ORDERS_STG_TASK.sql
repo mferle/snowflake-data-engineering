@@ -1,5 +1,3 @@
---!jinja2
-
 -- create a task that inserts data from the stream into the staging table
 create or replace task BAKERY_DB.ORCHESTRATION.INSERT_ORDERS_STG_TASK
   warehouse = 'BAKERY_WH'

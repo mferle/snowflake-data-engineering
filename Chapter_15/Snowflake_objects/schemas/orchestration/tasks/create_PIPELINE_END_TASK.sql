@@ -1,5 +1,3 @@
---!jinja2
-
 -- create the finalizer task
 create or replace task BAKERY_DB.ORCHESTRATION.PIPELINE_END_TASK
   warehouse = BAKERY_WH

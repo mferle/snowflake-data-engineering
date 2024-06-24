@@ -1,5 +1,3 @@
---!jinja2
-
 use database BAKERY_DB;
 -- EXT schema
 execute immediate from '../Snowflake_objects/schemas/ext/stages/create_JSON_ORDERS_STAGE.sql';
@@ -31,4 +29,4 @@ execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_
 
 
 -- snow sql -q "alter git repository ADMIN_DB.GIT_INTEGRATION.SF_DE_IA fetch"
--- snow sql --database ADMIN_DB --schema GIT_INTEGRATION -q "execute immediate from @SF_DE_IA/branches/wip/Chapter_15/Snowflake_objects/deploy_objects.sql
+-- snow sql -q "execute immediate from @ADMIN_DB.GIT_INTEGRATION.SF_DE_IA/branches/main/Chapter_15/Snowflake_objects/deploy_objects.sql"
