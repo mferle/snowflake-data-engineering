@@ -2,6 +2,8 @@ use role SYSADMIN;
 create database ADMIN_DB;
 create schema GIT_INTEGRATION;
 
+-- continue to use the SYSADMIN role to keep the exercise simple
+-- otherwise, create a custom role and grant it the CREATE SECRET ON SCHEMA privilege
 -- create the git secret
 create or replace secret GIT_SECRET
   type = password
@@ -15,8 +17,9 @@ use role ACCOUNTADMIN;
 -- create an API integration with the Git account
 create or replace api integration GIT_API_INTEGRATION
   API_PROVIDER = git_https_api
-  API_ALLOWED_PREFIXES = ('https://github.com/mferle')
-  ALLOWED_AUTHENTICATION_SECRETS = (git_secret)
+-- replace your Git account in the next line (example 'https://github.com/mferle')
+  API_ALLOWED_PREFIXES = ('https://<your Git host>/<your Git account>')
+  ALLOWED_AUTHENTICATION_SECRETS = (GIT_SECRET)
   ENABLED = TRUE;
 
 -- grant usage on the integration to the SYSADMIN role
@@ -29,8 +32,8 @@ use role SYSADMIN;
 create or replace git repository SF_DE_IA
   api_integration = GIT_API_INTEGRATION
   git_credentials = GIT_SECRET
--- substitute the URL to your repository on the next line
-  ORIGIN = 'https://github.com/mferle/SF_DE_IA.git'; 
+-- replace the URL to your repository in the next line
+  ORIGIN = 'https://<your Git host>/<your Git account>/SF_DE_IA.git'; 
 
 -- fetch the latest from the Git repository
 alter git repository SF_DE_IA fetch;
