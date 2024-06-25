@@ -1,7 +1,7 @@
 use role DATA_ENGINEER;
 use warehouse BAKERY_WH;
 use database BAKERY_DB;
-use schema ORCHESTRATION;
+use schema STG;
 
 -- insert a new partner into the PARTNER staging table
 insert into STG.PARTNER values
