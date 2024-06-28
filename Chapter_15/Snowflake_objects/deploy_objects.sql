@@ -29,5 +29,5 @@ execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_
 execute immediate from '../Snowflake_objects/schemas/orchestration/tasks/create_PIPELINE_END_TASK.sql';
 
 
--- snow sql -q "alter git repository ADMIN_DB.GIT_INTEGRATION.SF_DE_IA fetch"
--- snow sql -q "execute immediate from @ADMIN_DB.GIT_INTEGRATION.SF_DE_IA/branches/main/Chapter_15/Snowflake_objects/deploy_objects.sql"
+-- snow sql -q "alter git repository ADMIN_DB.GIT_INTEGRATION.SF_DE fetch"
+-- snow sql -q "execute immediate from @ADMIN_DB.GIT_INTEGRATION.SF_DE/branches/main/Chapter_15/Snowflake_objects/deploy_objects.sql"

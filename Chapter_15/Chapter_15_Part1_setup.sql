@@ -29,17 +29,17 @@ grant usage on integration GIT_API_INTEGRATION to role SYSADMIN;
 -- otherwise, create a custom role and grant it the CREATE GIT REPOSITORY ON SCHEMA privilege
 use role SYSADMIN;
 -- create a Git repository using the API integration and the secret
-create or replace git repository SF_DE_IA
+create or replace git repository SF_DE
   api_integration = GIT_API_INTEGRATION
   git_credentials = GIT_SECRET
 -- replace the URL to your repository in the next line
-  ORIGIN = 'https://<your Git host>/<your Git account>/SF_DE_IA.git'; 
+  ORIGIN = 'https://<your Git host>/<your Git account>/SF_DE.git'; 
 
 -- fetch the latest from the Git repository
-alter git repository SF_DE_IA fetch;
+alter git repository SF_DE fetch;
 
 -- show branches in the Git repository
-show git branches in SF_DE_IA;
+show git branches in SF_DE;
 
 -- list the files in the repository main branch
-ls @SF_DE_IA/branches/main;
+ls @SF_DE/branches/main;

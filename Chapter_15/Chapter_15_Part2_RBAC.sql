@@ -64,8 +64,8 @@ grant usage on warehouse BAKERY_WH to role DATA_ANALYST;
 use role SYSADMIN;
 grant usage on database ADMIN_DB to role DATA_ENGINEER;
 grant usage on schema ADMIN_DB.GIT_INTEGRATION to role DATA_ENGINEER;
-grant read on git repository ADMIN_DB.GIT_INTEGRATION.SF_DE_IA to role DATA_ENGINEER;
-grant write on git repository ADMIN_DB.GIT_INTEGRATION.SF_DE_IA to role DATA_ENGINEER;
+grant read on git repository ADMIN_DB.GIT_INTEGRATION.SF_DE to role DATA_ENGINEER;
+grant write on git repository ADMIN_DB.GIT_INTEGRATION.SF_DE to role DATA_ENGINEER;
 
 -- grant the DATA_ENGINEER role the privilege to execute tasks
 use role ACCOUNTADMIN;
