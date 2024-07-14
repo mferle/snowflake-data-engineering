@@ -33,7 +33,7 @@ create or replace git repository SF_DE
   api_integration = GIT_API_INTEGRATION
   git_credentials = GIT_SECRET
 -- replace the URL to your repository in the next line
-  ORIGIN = 'https://<your Git host>/<your Git account>/SF_DE.git'; 
+  ORIGIN = 'https://<your Git host>/<your Git account>/snowflake-data-engineering.git'; 
 
 -- fetch the latest from the Git repository
 alter git repository SF_DE fetch;

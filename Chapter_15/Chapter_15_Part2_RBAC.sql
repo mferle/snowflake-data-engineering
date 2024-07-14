@@ -15,6 +15,15 @@ use role USERADMIN;
 
 -- create the access roles for full access and for read-only access
 create or replace role BAKERY_FULL;
+
+-- to make the script repeatable:
+-- must use the SECURITYADMIN role (because this role has the MANAGE GRANTS privilege) 
+-- to drop the BAKERY_READ role (because this role has future grants)
+use role SECURITYADMIN;
+drop role if exists BAKERY_READ;
+
+-- go back to the USERADMIN role
+use role USERADMIN;
 create or replace role BAKERY_READ;
 
 -- create the functional roles

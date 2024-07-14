@@ -1,3 +1,7 @@
+use role SYSADMIN;
+use database BAKERY_DB;
+use schema SNOWPARK;
+
 -- create the stored procedure with parameters
 create or replace procedure PROC_IS_HOLIDAY(p_date date, p_country string)
     returns String

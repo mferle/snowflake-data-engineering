@@ -78,6 +78,9 @@ grant usage on integration SPEEDY_QUEUE_INTEGRATION to role SYSADMIN;
 
 -- create the snowpipe
 use role SYSADMIN;
+use database BAKERY_DB;
+use schema DELIVERY_ORDERS;
+
 create pipe SPEEDY_PIPE
   auto_ingest = true
   integration = 'SPEEDY_QUEUE_INTEGRATION'
