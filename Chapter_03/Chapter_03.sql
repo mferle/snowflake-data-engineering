@@ -77,6 +77,7 @@ from (
   select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() 
   from @BISTRO_STAGE
 )
+file_format = ORDERS_CSV_FORMAT
 on_error = abort_statement
 ;
 
@@ -108,6 +109,7 @@ from (
   select $1, $2, $3, $4, $5, metadata$filename, current_timestamp() 
   from @BISTRO_STAGE/202308
 )
+file_format = ORDERS_CSV_FORMAT
 on_error = abort_statement
 ;
 

@@ -11,7 +11,7 @@ create stage ORDERS_STAGE;
 -- view the contents of the stage (will be empty upon creation)
 list @ORDERS_STAGE;
 
--- manually upload file Orders_2023-07-07.csv into the internal stage using the Snowsight user interface
+-- manually upload file Orders_2023-07-07.csv into the ORDERS_STAGE internal stage using the Snowsight user interface
 
 -- view the contents of the stage again (should show the file that was just uploaded)
 list @ORDERS_STAGE;
@@ -120,7 +120,7 @@ insert into SUMMARY_ORDERS(delivery_date, baked_good_type, total_quantity)
   group by all;
 
 -- view data in the summary table
-select * from SUMMARY_ORDERS order by delivery_date;
+select * from SUMMARY_ORDERS;
 
 -- create task that executes the previous steps on schedule:
 -- - truncates the staging table

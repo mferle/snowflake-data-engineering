@@ -101,6 +101,7 @@ group by product_id;
 select SYSTEM$CLUSTERING_INFORMATION('retailer_sales', '(store_id)');
 
 -- sum of the sold quantity of a chosen product in each store
+-- if you don’t see a product with an ID value of 4120371332641752996, select a different product
 -- Listing 8.4
 select store_id, sum(sales_quantity) as tot_quantity
 from RETAILER_SALES
