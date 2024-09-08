@@ -46,7 +46,7 @@ create or replace table DQ_LOG (
   table_name varchar,
   dq_rule_name varchar,
   error_cnt number,
-  error_info varchar
+  error_info variant
 );
 
 -- go back to the ORCHESTRATION schema to work on the tasks
