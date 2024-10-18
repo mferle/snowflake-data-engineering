@@ -12,7 +12,7 @@ select SNOWFLAKE.CORTEX.SENTIMENT('The service was excellent!');
 select SNOWFLAKE.CORTEX.SENTIMENT('The bagel was stale.');
 select SNOWFLAKE.CORTEX.SENTIMENT('I went to the bakery for lunch.');
 
--- map the sentiment score to Positive, Negative, and Unknown
+-- map the sentiment score to Positive, Negative, and Neutral
 select 
   rating,
   time_created,
